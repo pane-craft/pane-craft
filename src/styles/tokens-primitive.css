@@ -1,0 +1,36 @@
+:root {
+  /* Colors */
+  --pc-color-bg-default: #2d2d30;
+  --pc-color-bg-hover: #37373d;
+  --pc-color-bg-active: #1e1e1e;
+  --pc-color-text-default: #cccccc;
+  --pc-color-text-active: #ffffff;
+  --pc-color-border-default: #3c3c3c;
+  --pc-color-highlight-default: #007acc;
+  --pc-color-danger-default: #e74c3c;
+
+  --pc-color-bg-contrast: #000000;
+  --pc-color-bg-contrast-active: #000080;
+  --pc-color-border-contrast: #ffffff;
+
+  --pc-opacity-sm: 0.7;
+  --pc-opacity-md: 0.5;
+
+  /* Spacing */
+  --pc-spacing-sm: 0.25rem;
+  --pc-spacing-md: 0.5rem;
+  --pc-spacing-lg: 0.75rem;
+  --pc-spacing-xl: 1rem;
+
+  --pc-radius-xs: 2px;
+  --pc-radius-sm: 4px;
+  --pc-radius-md: 8px;
+  --pc-radius-lg: 12px;
+
+  /* Font */
+  --pc-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --pc-font-size: 0.8125rem;
+
+  /* Animation */
+  --pc-anim-duration: 0.2s;
+}
