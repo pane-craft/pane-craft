@@ -1,5 +1,6 @@
-// types/BaseComponent.types.ts
 import { type AriaRole, type AriaAttributes } from 'react';
+
+export type Orientation = 'horizontal' | 'vertical';
 
 /**
  * Shared base props inherited by every component in the library.
