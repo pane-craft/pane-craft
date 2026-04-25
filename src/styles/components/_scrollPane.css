@@ -1,0 +1,24 @@
+:root {
+  /* Track */
+  --pc-scroll-track-size: 0.625rem;
+  --pc-scroll-track-color-bg: transparent;
+  --pc-scroll-track-offset: calc(var(--pc-scroll-track-size) * -0.5);
+
+  /* Thumb */
+  --pc-scroll-thumb-size-default: 0.375rem;
+  --pc-scroll-thumb-size-hover: 0.5rem;
+  --pc-scroll-thumb-radius: var(--pc-radius-sm);
+  --pc-scroll-thumb-color-default: rgba(var(--pc-color-ui-default), 1);
+  --pc-scroll-thumb-color-hover: rgba(var(--pc-color-ui-default), 1);
+  --pc-scroll-thumb-color-active: rgba(var(--pc-color-ui-default), 1);
+  --pc-scroll-thumb-offset: calc(
+    (var(--pc-scroll-track-size) - var(--pc-scroll-thumb-size-default)) / 2
+  );
+
+  /* Animation */
+  --pc-scroll-anim-fade-duration: 0.3s;
+  --pc-scroll-anim-size-duration: var(--pc-anim-duration);
+
+  /* Contrast */
+  --pc-scroll-thumb-color-contrast: var(--pc-color-border-contrast);
+}

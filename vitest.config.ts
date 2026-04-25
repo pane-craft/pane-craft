@@ -25,6 +25,7 @@ export default defineConfig({
         '**/*.config.ts',
         'src/test-setup.ts',
         'src/index.ts',
+        'src/test-utils/**',
       ],
       // thresholds: {
       //   lines: 80,

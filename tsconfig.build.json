@@ -8,6 +8,7 @@
     "dist",
     "**/*.test.tsx",
     "**/*.stories.tsx",
-    "src/test-setup.ts"
+    "src/test-setup.ts",
+    "src/test-utils"
   ]
 }

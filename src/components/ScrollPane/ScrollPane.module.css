@@ -1,0 +1,124 @@
+.scrollPane {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.viewportHorizontal {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.viewportVertical {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.content {
+  display: block;
+  box-sizing: border-box;
+}
+
+.contentHorizontal {
+  display: inline-flex;
+  min-width: max-content;
+  height: 100%;
+}
+
+.contentVertical {
+  display: block;
+  min-height: max-content;
+  width: 100%;
+}
+
+.track {
+  position: absolute;
+  background: var(--pc-scroll-track-color-bg);
+  opacity: 0;
+  transition: opacity var(--pc-scroll-anim-fade-duration) ease;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.trackHorizontal {
+  bottom: var(--pc-scroll-track-offset);
+  left: 0;
+  right: 0;
+  height: var(--pc-scroll-track-size);
+  cursor: pointer;
+}
+
+.trackVertical {
+  right: var(--pc-scroll-track-offset);
+  top: 0;
+  bottom: 0;
+  width: var(--pc-scroll-track-size);
+  cursor: pointer;
+}
+
+.trackVisible {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.thumb {
+  position: absolute;
+  background: var(--pc-scroll-thumb-color-default);
+  border-radius: var(--pc-scroll-thumb-radius);
+  cursor: grab;
+  transition:
+    background var(--pc-scroll-anim-size-duration) ease,
+    height var(--pc-scroll-anim-size-duration) ease,
+    width var(--pc-scroll-anim-size-duration) ease;
+  will-change: transform;
+}
+
+.thumb:hover {
+  background: var(--pc-scroll-thumb-color-hover);
+}
+
+.thumb:active {
+  cursor: grabbing;
+  background: var(--pc-scroll-thumb-color-active);
+}
+
+.thumbHorizontal {
+  top: var(--pc-scroll-thumb-offset);
+  height: var(--pc-scroll-thumb-size-default);
+}
+
+.thumbHorizontal:hover,
+.thumbHorizontal:active {
+  height: var(--pc-scroll-thumb-size-hover);
+}
+
+.thumbVertical {
+  left: var(--pc-scroll-thumb-offset);
+  width: var(--pc-scroll-thumb-size-default);
+}
+
+.thumbVertical:hover,
+.thumbVertical:active {
+  width: var(--pc-scroll-thumb-size-hover);
+}
+
+@media (prefers-contrast: high) {
+  .thumb {
+    background: var(--pc-scroll-thumb-color-contrast);
+  }
+}

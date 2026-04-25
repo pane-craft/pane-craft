@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+import { DEFAULT_SCROLL_PANE_THUMB_SIZE } from '../config/defaults';
 import { ScrollStateManager } from './ScrollStateManager';
 
 describe('ScrollStateManager', () => {
@@ -16,7 +17,7 @@ describe('ScrollStateManager', () => {
       expect(state.viewportSize).toBe(0);
       expect(state.contentSize).toBe(0);
       expect(state.thumbSize).toBe(0);
-      expect(state.thumbSizeMin).toBe(20);
+      expect(state.thumbSizeMin).toBe(DEFAULT_SCROLL_PANE_THUMB_SIZE);
       expect(state.thumbOffset).toBe(0);
       expect(state.hasOverflow).toBe(false);
       expect(state.isDragging).toBe(false);
@@ -65,7 +66,9 @@ describe('ScrollStateManager', () => {
 
       it('enforces the default minimum thumb size of 20px', () => {
         manager.updateSize(100, 10000);
-        expect(manager.getState().thumbSize).toBe(20);
+        expect(manager.getState().thumbSize).toBe(
+          DEFAULT_SCROLL_PANE_THUMB_SIZE,
+        );
       });
 
       it('sets thumbSize to 0 when there is no overflow', () => {
