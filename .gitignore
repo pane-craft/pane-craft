@@ -1,7 +1,8 @@
 node_modules/
 dist/
 
-*storybook.log
+*.log
+
 storybook-static
 
 coverage/

@@ -11,7 +11,10 @@
   content: '';
   position: absolute;
   background: var(--pc-splitter-color-bg-default);
-  transition: background var(--pc-splitter-anim-duration) ease;
+  transition:
+    background var(--pc-splitter-anim-duration) ease,
+    width var(--pc-splitter-anim-duration) ease,
+    height var(--pc-splitter-anim-duration) ease;
   pointer-events: none;
 }
 
@@ -43,8 +46,17 @@
   transform: translateY(-50%);
 }
 
-.splitter:hover::after,
-.splitter:focus-visible::after,
+/* Interactive states widen the line via the size custom property. The
+   `width`/`height` rules on `::after` already read `var(--pc-splitter-size)`,
+   so re-setting it here flows through to both orientations. */
+.splitter:not(.splitterDisabled):hover,
+.splitter:not(.splitterDisabled):focus-visible,
+.splitterActive {
+  --pc-splitter-size: var(--pc-splitter-size-hover);
+}
+
+.splitter:not(.splitterDisabled):hover::after,
+.splitter:not(.splitterDisabled):focus-visible::after,
 .splitterActive::after {
   background: var(--pc-splitter-color-bg-hover);
 }
