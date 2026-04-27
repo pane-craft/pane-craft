@@ -63,7 +63,7 @@ export type UseTabDragAndDropReturn = {
  * @remarks
  * The hook is sends DOM events into the manager and exposes drag state for
  * rendering, but it doesn't decide what a drop means. The consumer wires up
- * `onTabDrop` and `onListDrop` to perform the reorder/move logic on its tabs.
+ * `onTabDrop` and `onTabListDrop` to perform the reorder/move logic on its tabs.
  *
  * Lifecycle of a drag:
  *
@@ -77,7 +77,7 @@ export type UseTabDragAndDropReturn = {
  *    empty space around the tabs.
  * 4. `onDrop` (tab) — fires `onTabDrop` with the dragged tab, target tab,
  *    and side, then calls {@link DragStateManager.end}.
- * 5. `onDrop` (list) — fires `onListDrop`, then calls
+ * 5. `onDrop` (list) — fires `onTabListDrop`, then calls
  *    {@link DragStateManager.end}.
  * 6. `onDragEnd` — always called by the browser after a drag completes
  *    (drop or cancel). Calls {@link DragStateManager.end} as a safety net;
@@ -98,7 +98,7 @@ export type UseTabDragAndDropReturn = {
  * const { state, getTabHandlers, listHandlers } = useTabDragAndDrop({
  *   paneId: 0,
  *   onTabDrop: ({ tab, targetTab, side }) => reorder(tab, targetTab, side),
- *   onListDrop: ({ tab }) => appendToEnd(tab),
+ *   onTabListDrop: ({ tab }) => appendToEnd(tab),
  * });
  *
  * return (

@@ -185,6 +185,102 @@ describe('Tab Component', () => {
     expect(onParentClick).not.toHaveBeenCalled();
   });
 
+  // Activation (click and keyboard) ------------------------------------------
+  describe('Activation', () => {
+    it('calls onClick when the tab is clicked', () => {
+      const onClick = vi.fn();
+      const { container } = render(<Tab {...defaultProps} onClick={onClick} />);
+
+      fireEvent.click(container.firstChild as HTMLElement);
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls onClick when Enter is pressed on the tab', () => {
+      const onClick = vi.fn();
+      const { container } = render(<Tab {...defaultProps} onClick={onClick} />);
+
+      fireEvent.keyDown(container.firstChild as HTMLElement, { key: 'Enter' });
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls onClick when Space is pressed on the tab', () => {
+      const onClick = vi.fn();
+      const { container } = render(<Tab {...defaultProps} onClick={onClick} />);
+
+      fireEvent.keyDown(container.firstChild as HTMLElement, { key: ' ' });
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('preventDefault is called for Space to suppress page scroll', () => {
+      const onClick = vi.fn();
+      const { container } = render(<Tab {...defaultProps} onClick={onClick} />);
+
+      const event = new KeyboardEvent('keydown', {
+        key: ' ',
+        bubbles: true,
+        cancelable: true,
+      });
+      const preventDefault = vi.spyOn(event, 'preventDefault');
+      (container.firstChild as HTMLElement).dispatchEvent(event);
+
+      expect(preventDefault).toHaveBeenCalled();
+    });
+
+    it('does not call onClick for unrelated keys', () => {
+      const onClick = vi.fn();
+      const { container } = render(<Tab {...defaultProps} onClick={onClick} />);
+
+      fireEvent.keyDown(container.firstChild as HTMLElement, { key: 'a' });
+      fireEvent.keyDown(container.firstChild as HTMLElement, { key: 'Tab' });
+      fireEvent.keyDown(container.firstChild as HTMLElement, {
+        key: 'ArrowRight',
+      });
+
+      expect(onClick).not.toHaveBeenCalled();
+    });
+
+    it('does not throw when clicked without an onClick handler', () => {
+      const { container } = render(<Tab {...defaultProps} />);
+
+      expect(() =>
+        fireEvent.click(container.firstChild as HTMLElement),
+      ).not.toThrow();
+    });
+
+    it('does not throw on Enter or Space without an onClick handler', () => {
+      const { container } = render(<Tab {...defaultProps} />);
+
+      expect(() => {
+        fireEvent.keyDown(container.firstChild as HTMLElement, {
+          key: 'Enter',
+        });
+        fireEvent.keyDown(container.firstChild as HTMLElement, { key: ' ' });
+      }).not.toThrow();
+    });
+
+    it('clicking the close button does not also fire onClick', () => {
+      const onClick = vi.fn();
+      const onClose = vi.fn();
+
+      render(
+        <Tab
+          {...defaultProps}
+          isCloseable
+          onClick={onClick}
+          onClose={onClose}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole('button', closeBtnRoleData));
+
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(onClick).not.toHaveBeenCalled();
+    });
+  });
+
   // Accessibility (a11y prop) ------------------------------------------------
   it('forwards a11y props to the root element', () => {
     const { container } = render(

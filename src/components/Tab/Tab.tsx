@@ -12,8 +12,14 @@ import styles from './Tab.module.css';
  * @remarks
  * Tab is stateless. All visual states (`isActive`, `isDragged`,
  * `dropTargetSide`) are controlled externally. The parent component is
- * responsible for managing which tab is active, drag-and-drop state, etc. Tab
- * has the following default ARIA properties:
+ * responsible for managing which tab is active, drag-and-drop state, etc.
+ *
+ * Activation is exposed through mouse click, or `Enter`/`Space` while the tab
+ * is focused — both invoke `onClick`. `Space` calls `preventDefault()` to
+ * suppress page scroll. Tab does not set `isActive` itself; the parent must
+ * reflect the new state back in.
+ *
+ * Default ARIA properties:
  * `role='tab'`
  * `aria-selected={isActive}`
  * `tabIndex={isActive ? 0 : -1}`
@@ -25,7 +31,9 @@ export type TabProps = BaseComponentProps & TabItem;
  *
  * @remarks
  * Renders a tab with a label and optional close button. All state data is
- * controlled via props — this component holds no internal state.
+ * controlled via props — this component holds no internal state. Activation
+ * is exposed through `onClick`, which fires on mouse click and on
+ * `Enter`/`Space` when the tab is focused.
  *
  * @example
  * Basic usage inside a tab bar:
@@ -37,6 +45,7 @@ export type TabProps = BaseComponentProps & TabItem;
  *   isDragged={false}
  *   dropTargetSide={null}
  *   isCloseable={true}
+ *   onClick={() => setActiveId(0)}
  *   onClose={handleClose}
  * />
  * ```
@@ -50,6 +59,7 @@ export const Tab: React.FC<TabProps> = ({
   isDragged = false,
   dropTargetSide = null,
   isCloseable = true,
+  onClick,
   onClose,
   className = '',
   a11y = {},
@@ -68,6 +78,13 @@ export const Tab: React.FC<TabProps> = ({
 
   return (
     <div
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
       className={classes}
       title={label}
       data-tab-id={id}

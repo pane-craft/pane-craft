@@ -69,6 +69,32 @@ export type TabItem = {
   isCloseable?: boolean;
 
   /**
+   * Callback fired when the tab is activated — by mouse click, or by
+   * pressing `Enter`/`Space` while the tab is focused.
+   *
+   * @remarks
+   * Tab is stateless: invoking `onClick` does not flip `isActive` on its
+   * own. The parent is expected to update its active tab id and pass the
+   * new `isActive` value back in.
+   *
+   * When the tab is rendered through `TabList`, this fires *in addition*
+   * to `TabListProps.onTabClick` — selection runs first, then this
+   * callback, so the consumer observes the post-activation state. The two
+   * differ in cadence: `TabListProps.onTabClick` only fires when the active
+   * tab actually changes, whereas `onClick` fires on every click including
+   * re-clicks of the already-active tab.
+   *
+   * Clicks on the close button do not invoke `onClick` — the close button
+   * stops propagation internally.
+   *
+   * @example
+   * ```tsx
+   * <Tab id={3} onClick={() => setActiveId(3)} ... />
+   * ```
+   */
+  onClick?: () => void;
+
+  /**
    * Callback when the user clicks the close button.
    *
    * @remarks

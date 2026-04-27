@@ -528,7 +528,7 @@ describe('useTabDragAndDrop', () => {
   });
 
   describe('listHandlers.onDrop', () => {
-    it('invokes onListDrop with dragged tab and pane ids, then ends the drag', () => {
+    it('invokes onTabListDrop with dragged tab and pane ids, then ends the drag', () => {
       const onTabListDrop = vi.fn();
       const { result } = renderHook(() =>
         useTabDragAndDrop({ paneId, manager, onTabListDrop }),
@@ -578,7 +578,7 @@ describe('useTabDragAndDrop', () => {
       });
     });
 
-    it('does not invoke onListDrop when the drop target is a tab', () => {
+    it('does not invoke onTabListDrop when the drop target is a tab', () => {
       const onTabListDrop = vi.fn();
       const { result } = renderHook(() =>
         useTabDragAndDrop({ paneId, manager, onTabListDrop }),
@@ -596,7 +596,7 @@ describe('useTabDragAndDrop', () => {
       expect(onTabListDrop).not.toHaveBeenCalled();
     });
 
-    it('does not invoke onListDrop when no drag is in progress', () => {
+    it('does not invoke onTabListDrop when no drag is in progress', () => {
       const onTabListDrop = vi.fn();
       const { result } = renderHook(() =>
         useTabDragAndDrop({ paneId, manager, onTabListDrop }),
