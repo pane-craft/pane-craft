@@ -1,0 +1,17 @@
+:root {
+  /* Hairline border (resting + hover) */
+  --pc-splitter-size: 1px;
+  --pc-splitter-size-hover: 3px;
+
+  /* Draggable border */
+  --pc-splitter-hit-area: var(--pc-spacing-md);
+  --pc-splitter-color-bg-default: var(--pc-color-border-default);
+  --pc-splitter-color-bg-hover: var(--pc-color-highlight-default);
+  --pc-splitter-color-bg-active: var(--pc-color-highlight-default);
+
+  /* Animation */
+  --pc-splitter-anim-duration: var(--pc-anim-duration);
+
+  /* Contrast */
+  --pc-splitter-color-bg-contrast: var(--pc-color-border-contrast);
+}

@@ -1,0 +1,77 @@
+.splitter {
+  position: relative;
+  flex: 0 0 var(--pc-splitter-hit-area);
+  background: transparent;
+  box-sizing: border-box;
+  user-select: none;
+  touch-action: none;
+}
+
+.splitter::after {
+  content: '';
+  position: absolute;
+  background: var(--pc-splitter-color-bg-default);
+  transition: background var(--pc-splitter-anim-duration) ease;
+  pointer-events: none;
+}
+
+.splitterHorizontal {
+  cursor: col-resize;
+  width: var(--pc-splitter-hit-area);
+  height: 100%;
+}
+
+.splitterHorizontal::after {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: var(--pc-splitter-size);
+  transform: translateX(-50%);
+}
+
+.splitterVertical {
+  cursor: row-resize;
+  height: var(--pc-splitter-hit-area);
+  width: 100%;
+}
+
+.splitterVertical::after {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: var(--pc-splitter-size);
+  transform: translateY(-50%);
+}
+
+.splitter:hover::after,
+.splitter:focus-visible::after,
+.splitterActive::after {
+  background: var(--pc-splitter-color-bg-hover);
+}
+
+.splitterActive::after {
+  background: var(--pc-splitter-color-bg-active);
+}
+
+.splitterDisabled {
+  cursor: default;
+}
+
+.splitterDisabled::after {
+  opacity: var(--pc-opacity-md);
+}
+
+.splitter:focus {
+  outline: none;
+}
+
+.splitter:focus-visible {
+  outline: 2px solid var(--pc-color-highlight-default);
+  outline-offset: -2px;
+}
+
+@media (prefers-contrast: high) {
+  .splitter::after {
+    background: var(--pc-splitter-color-bg-contrast);
+  }
+}
