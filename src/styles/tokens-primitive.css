@@ -7,6 +7,8 @@
   --pc-color-text-active: #ffffff;
   --pc-color-border-default: #3c3c3c;
   --pc-color-highlight-default: #007acc;
+  --pc-color-highlight-rgb: 0, 122, 204;
+  --pc-color-overlay-rgb: 83, 89, 93;
   --pc-color-danger-default: #e74c3c;
 
   --pc-color-bg-contrast: #000000;

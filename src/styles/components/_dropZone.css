@@ -1,0 +1,14 @@
+:root {
+  /* Color */
+  --pc-dropzone-color-bg-idle: rgba(var(--pc-color-overlay-rgb), 0.3);
+  --pc-dropzone-color-bg-hover: rgba(var(--pc-color-overlay-rgb), 0.55);
+
+  /* Sizing */
+  --pc-dropzone-size-edge: 30%;
+
+  /* Animation */
+  --pc-dropzone-anim-duration: var(--pc-anim-duration);
+
+  /* Contrast */
+  --pc-dropzone-color-bg-contrast: var(--pc-color-border-contrast);
+}

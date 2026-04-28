@@ -2,8 +2,8 @@ import {
   type DragEvent,
   type DragState,
   type TabDropTargetHoverData,
-  type DropZoneHoverData,
 } from '../types/DragStateManager.type';
+import { type DropZoneHoverData } from '../types/DropZone.type';
 import { type PaneId } from '../types/Pane.type';
 import { type TabItem } from '../types/Tab.type';
 import { BaseStateManager } from './BaseStateManager';
@@ -18,11 +18,12 @@ import { BaseStateManager } from './BaseStateManager';
  * 1. The user begins dragging a tab, calling {@link DragStateManager.start}.
  * 2. As the user moves the mouse, hover state is tracked via
  *    {@link DragStateManager.setTabHover} (when over another tab) and
- *    {@link DragStateManager.setZoneHover} (when over a drop zone).
+ *    {@link DragStateManager.setDropZoneHover} (when over a drop zone).
  * 3. The user releases the mouse, calling {@link DragStateManager.end} to
  *    clear the drag state. The consumer is responsible for inspecting
- *    {@link DragState.tabHover} and {@link DragState.zoneHover} before
- *    calling `end()` to decide what action to take (reorder, move, split).
+ *    {@link DragState.tabDropTargetHover} and {@link DragState.dropZoneHover}
+ *    before calling `end()` to decide what action to take (reorder, move,
+ *    split).
  *
  * The manager doesn't make business decisions about reordering or splitting
  * panes. Those are the responsibility of the consumer.
@@ -148,18 +149,18 @@ export class DragStateManager extends BaseStateManager<DragState, DragEvent> {
    * Pass `null` to clear the hover. Silently exits when no drag is in
    * progress so that stray pointer events outside a drag don't interfere.
    *
-   * Emits `ZONE_HOVER_CHANGED` and notifies subscribers, even if the
+   * Emits `DROP_ZONE_HOVER_CHANGED` and notifies subscribers, even if the
    * value is unchanged.
    *
    * @param hover - The pane drop zone being hovered, or `null` to clear.
    */
-  public setZoneHover(hover: DropZoneHoverData | null): void {
+  public setDropZoneHover(hover: DropZoneHoverData | null): void {
     if (!this.state.draggedTab) {
       return;
     }
 
     this.state.dropZoneHover = hover;
-    this.emit({ eventType: 'ZONE_HOVER_CHANGED', payload: { hover } });
+    this.emit({ eventType: 'DROP_ZONE_HOVER_CHANGED', payload: { hover } });
     this.notifySubscribers();
   }
 }

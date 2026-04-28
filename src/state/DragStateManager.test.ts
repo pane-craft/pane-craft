@@ -45,7 +45,7 @@ describe('DragStateManager', () => {
     it('clears any previous hover state', () => {
       manager.start(tabA, sourcePaneId);
       manager.setTabHover({ tabId: 99, side: 'left' });
-      manager.setZoneHover({ paneId: 3, pos: 'center' });
+      manager.setDropZoneHover({ paneId: 3, pos: 'center' });
 
       manager.start(tabB, 1);
       const state = manager.getState();
@@ -80,7 +80,7 @@ describe('DragStateManager', () => {
     it('resets all drag state', () => {
       manager.start(tabA, sourcePaneId);
       manager.setTabHover({ tabId: 5, side: 'right' });
-      manager.setZoneHover({ paneId: 2, pos: 'top' });
+      manager.setDropZoneHover({ paneId: 2, pos: 'top' });
 
       manager.end();
       const state = manager.getState();
@@ -145,7 +145,7 @@ describe('DragStateManager', () => {
     });
 
     it('does not affect zone hover state', () => {
-      manager.setZoneHover({ paneId: 3, pos: 'center' });
+      manager.setDropZoneHover({ paneId: 3, pos: 'center' });
       manager.setTabHover({ tabId: 5, side: 'right' });
       expect(manager.getState().dropZoneHover).toEqual({
         paneId: 3,
@@ -198,13 +198,13 @@ describe('DragStateManager', () => {
     });
   });
 
-  describe('setZoneHover', () => {
+  describe('setDropZoneHover', () => {
     beforeEach(() => {
       manager.start(tabA, sourcePaneId);
     });
 
     it('updates the zone hover target', () => {
-      manager.setZoneHover({ paneId: 3, pos: 'right' });
+      manager.setDropZoneHover({ paneId: 3, pos: 'right' });
       expect(manager.getState().dropZoneHover).toEqual({
         paneId: 3,
         pos: 'right',
@@ -212,39 +212,39 @@ describe('DragStateManager', () => {
     });
 
     it('clears the zone hover when passed null', () => {
-      manager.setZoneHover({ paneId: 3, pos: 'right' });
-      manager.setZoneHover(null);
+      manager.setDropZoneHover({ paneId: 3, pos: 'right' });
+      manager.setDropZoneHover(null);
       expect(manager.getState().dropZoneHover).toBeNull();
     });
 
     it('does not affect tab hover state', () => {
       manager.setTabHover({ tabId: 5, side: 'right' });
-      manager.setZoneHover({ paneId: 3, pos: 'top' });
+      manager.setDropZoneHover({ paneId: 3, pos: 'top' });
       expect(manager.getState().tabDropTargetHover).toEqual({
         tabId: 5,
         side: 'right',
       });
     });
 
-    it('emits ZONE_HOVER_CHANGED with the new value', () => {
+    it('emits DROP_ZONE_HOVER_CHANGED with the new value', () => {
       const callback = vi.fn();
-      manager.on('ZONE_HOVER_CHANGED', callback);
+      manager.on('DROP_ZONE_HOVER_CHANGED', callback);
 
-      manager.setZoneHover({ paneId: 3, pos: 'bottom' });
+      manager.setDropZoneHover({ paneId: 3, pos: 'bottom' });
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
-          eventType: 'ZONE_HOVER_CHANGED',
+          eventType: 'DROP_ZONE_HOVER_CHANGED',
           payload: { hover: { paneId: 3, pos: 'bottom' } },
         }),
       );
     });
 
-    it('emits ZONE_HOVER_CHANGED with null when clearing', () => {
+    it('emits DROP_ZONE_HOVER_CHANGED with null when clearing', () => {
       const callback = vi.fn();
-      manager.setZoneHover({ paneId: 3, pos: 'left' });
-      manager.on('ZONE_HOVER_CHANGED', callback);
+      manager.setDropZoneHover({ paneId: 3, pos: 'left' });
+      manager.on('DROP_ZONE_HOVER_CHANGED', callback);
 
-      manager.setZoneHover(null);
+      manager.setDropZoneHover(null);
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({ payload: { hover: null } }),
       );
@@ -253,7 +253,7 @@ describe('DragStateManager', () => {
     it('notifies state subscribers', () => {
       const sub = vi.fn();
       manager.subscribe(sub);
-      manager.setZoneHover({ paneId: 3, pos: 'center' });
+      manager.setDropZoneHover({ paneId: 3, pos: 'center' });
       expect(sub).toHaveBeenCalled();
     });
 
@@ -261,10 +261,10 @@ describe('DragStateManager', () => {
       const idle = new DragStateManager();
       const callback = vi.fn();
       const sub = vi.fn();
-      idle.on('ZONE_HOVER_CHANGED', callback);
+      idle.on('DROP_ZONE_HOVER_CHANGED', callback);
       idle.subscribe(sub);
 
-      idle.setZoneHover({ paneId: 3, pos: 'center' });
+      idle.setDropZoneHover({ paneId: 3, pos: 'center' });
       expect(idle.getState().dropZoneHover).toBeNull();
       expect(callback).not.toHaveBeenCalled();
       expect(sub).not.toHaveBeenCalled();

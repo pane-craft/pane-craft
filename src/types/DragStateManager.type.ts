@@ -1,4 +1,4 @@
-import { type DropZonePosition } from './DropZone.type';
+import { type DropZoneHoverData } from './DropZone.type';
 import { type PaneId } from './Pane.type';
 import { type TabDropTargetSide, type TabId, type TabItem } from './Tab.type';
 
@@ -21,28 +21,12 @@ export type TabDropTargetHoverData = {
 };
 
 /**
- * Identifies the drop zone the user is currently hovering over while dragging
- * a tab.
- *
- * @remarks
- * A `'center'` drop moves the tab into the target pane's tab list, while
- * `'top'`/`'bottom'`/`'left'`/`'right'` drops split the pane and place the tab
- * in the new split pane.
- */
-export type DropZoneHoverData = {
-  /** The id of the pane whose drop zone is being hovered. */
-  paneId: PaneId;
-  /** Which region of the pane is being hovered. */
-  pos: DropZonePosition;
-};
-
-/**
  * The in-flight drag state.
  *
  * @remarks
- * `tabHover` and `zoneHover` are independent fields. Typically mutually
- * exclusive drop targets — the consumer is expected to clear one before
- * setting the other if it wants to enforce that invariant.
+ * `tabDropTargetHover` and `dropZoneHover` are independent fields. Typically
+ * mutually exclusive drop targets — the consumer is expected to clear one
+ * before setting the other if it wants to enforce that invariant.
  */
 export type DragState = {
   /** The tab currently being dragged, or `null` when no drag is active. */
@@ -69,6 +53,6 @@ export type DragEvent =
       payload: { hover: TabDropTargetHoverData | null };
     }
   | {
-      eventType: 'ZONE_HOVER_CHANGED';
+      eventType: 'DROP_ZONE_HOVER_CHANGED';
       payload: { hover: DropZoneHoverData | null };
     };
