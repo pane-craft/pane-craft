@@ -5,13 +5,11 @@ import { DEFAULT_SPLIT_PANE_OPTIONS } from '../../config/defaults';
 import '../../styles/tokens-primitive.css';
 import '../../styles/tokens-semantic.css';
 import { type SplitPaneProps } from '../../types/SplitPane.type';
+import { clamp } from '../../utils/utils';
 import { PaneSplitter } from '../PaneSplitter/PaneSplitter';
 import styles from './SplitPane.module.css';
 
 export type { SplitPaneProps } from '../../types/SplitPane.type';
-
-const clamp = (value: number, min: number, max: number): number =>
-  Math.max(min, Math.min(max, value));
 
 /**
  * Resizable layout controlling two panes separated by a draggable divider.

@@ -1,0 +1,48 @@
+.paneTree {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: block;
+  position: relative;
+}
+
+.empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  box-sizing: border-box;
+}
+
+.split {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.splitHorizontal {
+  flex-direction: row;
+}
+
+.splitVertical {
+  flex-direction: column;
+}
+
+.childSlot {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+.leaf {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}

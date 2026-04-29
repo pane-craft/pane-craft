@@ -13,7 +13,7 @@ export type { PaneSplitterProps } from '../../types/PaneSplitter.type';
  * Draggable divider between two sibling panes.
  *
  * @remarks
- * Internal primitive used by {@link SplitPane}. Not exported from the package
+ * Internal primitive used by {@link SplitPane} and {@link PaneTree}. Not exported from the package
  * root — consumers use the higher-level components instead.
  *
  * The splitter is fully headless: it emits positional deltas (not absolute
@@ -144,13 +144,13 @@ export const PaneSplitter: React.FC<PaneSplitterProps> = ({
       aria-valuenow={ariaValueNow}
       aria-valuemin={ariaValueMin}
       aria-valuemax={ariaValueMax}
-      aria-disabled={disabled ?? undefined}
+      aria-disabled={disabled}
       aria-label={ariaLabel}
       tabIndex={disabled ? -1 : 0}
       data-testid="pane-splitter"
       data-orientation={orientation}
       data-is-resizing={isResizing}
-      data-disabled={disabled ?? null}
+      data-disabled={disabled}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}
     />

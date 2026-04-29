@@ -12,6 +12,9 @@ import { type BaseComponentProps, type Orientation } from './Base.type';
  * {@link SplitPaneProps.onResize}. The component has no opinions about what
  * the children are; use it for editor/sidebar layouts, diff views,
  * documentation panes, or any other two-pane arrangement.
+ *
+ * For multi-pane tree layouts (recursive splits managed as state), see
+ * {@link PaneTree} and {@link PaneTreeStateManager}.
  */
 export type SplitPaneProps = BaseComponentProps & {
   /** Content rendered in the first (left / top) sub-pane. */
