@@ -6,10 +6,14 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { DragStateManager } from '../../state/DragStateManager';
 import { TabStateManager } from '../../state/TabStateManager';
 import {
+  createFrameDecorator,
   createTabItemList,
+} from '../../test-utils/test-react.util';
+import {
   createTabManager,
+  reorderTabListWithinPane,
 } from '../../test-utils/test.util';
-import { type TabDropTargetSide, type TabItem } from '../../types/Tab.type';
+import { type TabItem } from '../../types/Tab.type';
 import { TabList } from './TabList';
 
 const meta = {
@@ -19,7 +23,7 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     paneId: { control: 'number' },
-    scrollable: { control: 'boolean' },
+    isScrollable: { control: 'boolean' },
     className: { control: 'text' },
   },
 } satisfies Meta<typeof TabList>;
@@ -27,48 +31,17 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const FRAME_DECORATOR = (Story: React.ComponentType) => (
-  <div
-    style={{
-      width: 480,
-      height: 80,
-      background: '#1e1e1e',
-      border: '1px solid #3c3c3c',
-    }}
-  >
-    <Story />
-  </div>
-);
-
-/**
- * Same-pane reorder helper — extracts `tabId` from its current position and
- * inserts it next to `targetTabId` on the indicated `side`.
- */
-const reorderWithinPane = (
-  manager: TabStateManager,
-  tabId: number,
-  targetTabId: number,
-  side: TabDropTargetSide,
-): void => {
-  const order = manager.getState().order.slice();
-
-  const fromIdx = order.indexOf(tabId);
-  if (fromIdx >= 0) {
-    order.splice(fromIdx, 1);
-  }
-
-  const toIdx = order.indexOf(targetTabId) + (side === 'right' ? 1 : 0);
-  order.splice(toIdx, 0, tabId);
-
-  manager.reorder(order);
-};
+const FrameDecorator = createFrameDecorator(480, 80);
 
 /**
  * Same-pane "move to end" helper — used when a tab is dropped on the empty
  * space of its own tab list.
  */
-const moveToEndWithinPane = (manager: TabStateManager, tabId: number): void => {
-  const order = manager.getState().order.slice();
+const moveToEndWithinPane = (
+  tabManager: TabStateManager,
+  tabId: number,
+): void => {
+  const order = tabManager.getState().order.slice();
 
   const fromIdx = order.indexOf(tabId);
   if (fromIdx < 0) {
@@ -78,17 +51,20 @@ const moveToEndWithinPane = (manager: TabStateManager, tabId: number): void => {
   order.splice(fromIdx, 1);
   order.push(tabId);
 
-  manager.reorder(order);
+  tabManager.reorder(order);
 };
 
 // Base story ----------------------------------------------------------------
 
 const DefaultStory = (args: React.ComponentProps<typeof TabList>) => {
-  const manager = useMemo(() => createTabManager(createTabItemList(3), 1), []);
+  const tabManager = useMemo(
+    () => createTabManager(createTabItemList(3), 1),
+    [],
+  );
   return (
     <TabList
       {...args}
-      manager={manager}
+      tabManager={tabManager}
       onTabClick={(t) => {
         console.log('click', t.id);
       }}
@@ -96,10 +72,10 @@ const DefaultStory = (args: React.ComponentProps<typeof TabList>) => {
         console.log('close', t.id);
       }}
       onTabDrop={({ tab, targetTab, side }) => {
-        reorderWithinPane(manager, tab.id, targetTab.id, side);
+        reorderTabListWithinPane(tabManager, tab.id, targetTab.id, side);
       }}
       onTabListDrop={({ tab }) => {
-        moveToEndWithinPane(manager, tab.id);
+        moveToEndWithinPane(tabManager, tab.id);
       }}
     />
   );
@@ -110,26 +86,29 @@ const DefaultStory = (args: React.ComponentProps<typeof TabList>) => {
  * draggable.
  */
 export const Default: Story = {
-  decorators: [FRAME_DECORATOR],
+  decorators: [FrameDecorator],
   render: DefaultStory,
 };
 
 // Overflow & scrolling ------------------------------------------------------
 
 const OverflowingStory = (args: React.ComponentProps<typeof TabList>) => {
-  const manager = useMemo(() => createTabManager(createTabItemList(10), 5), []);
+  const tabManager = useMemo(
+    () => createTabManager(createTabItemList(10), 5),
+    [],
+  );
   return (
     <TabList
       {...args}
-      manager={manager}
+      tabManager={tabManager}
       onTabClick={(t) => {
         console.log('click', t.id);
       }}
       onTabDrop={({ tab, targetTab, side }) => {
-        reorderWithinPane(manager, tab.id, targetTab.id, side);
+        reorderTabListWithinPane(tabManager, tab.id, targetTab.id, side);
       }}
       onTabListDrop={({ tab }) => {
-        moveToEndWithinPane(manager, tab.id);
+        moveToEndWithinPane(tabManager, tab.id);
       }}
     />
   );
@@ -140,57 +119,60 @@ const OverflowingStory = (args: React.ComponentProps<typeof TabList>) => {
  * inside the tab bar.
  */
 export const Overflowing: Story = {
-  decorators: [FRAME_DECORATOR],
+  decorators: [FrameDecorator],
   render: OverflowingStory,
 };
 
 const NotScrollableStory = (args: React.ComponentProps<typeof TabList>) => {
-  const manager = useMemo(() => createTabManager(createTabItemList(6), 1), []);
-  return <TabList {...args} manager={manager} />;
+  const tabManager = useMemo(
+    () => createTabManager(createTabItemList(6), 1),
+    [],
+  );
+  return <TabList {...args} tabManager={tabManager} />;
 };
 
 /**
- * Same data as `Overflowing` but with `scrollable={false}`. The tabs spill
+ * Same data as `Overflowing` but with `isScrollable={false}`. The tabs spill
  * past the container edge instead of becoming a horizontal scroller. Not a
  * likely way a consumer would use the TabList, but included for full
  * specificity and awareness.
  */
 export const NotScrollable: Story = {
-  decorators: [FRAME_DECORATOR],
-  args: { scrollable: false },
+  decorators: [FrameDecorator],
+  args: { isScrollable: false },
   render: NotScrollableStory,
 };
 
 // Edge cases ----------------------------------------------------------------
 
 const EmptyStory = (args: React.ComponentProps<typeof TabList>) => {
-  const manager = useMemo(() => new TabStateManager(), []);
-  return <TabList {...args} manager={manager} />;
+  const tabManager = useMemo(() => new TabStateManager(), []);
+  return <TabList {...args} tabManager={tabManager} />;
 };
 
 /**
- * An empty tab bar — no tabs in the manager. Renders an empty container with
+ * An empty tab bar — no tabs in the tabManager. Renders an empty container with
  * keyboard navigation that does nothing until tabs are added.
  */
 export const Empty: Story = {
-  decorators: [FRAME_DECORATOR],
+  decorators: [FrameDecorator],
   render: EmptyStory,
 };
 
 const PinnedSingleStory = (args: React.ComponentProps<typeof TabList>) => {
-  const manager = useMemo(
+  const tabManager = useMemo(
     () =>
       createTabManager([{ id: 1, label: 'Pinned.md', isCloseable: false }], 1),
     [],
   );
-  return <TabList {...args} manager={manager} />;
+  return <TabList {...args} tabManager={tabManager} />;
 };
 
 /**
  * A single non-closeable tab — useful for "pinned" or required documents.
  */
 export const PinnedSingle: Story = {
-  decorators: [FRAME_DECORATOR],
+  decorators: [FrameDecorator],
   render: PinnedSingleStory,
 };
 
@@ -207,7 +189,7 @@ const CrossPaneDragAndDropStory = () => {
     [],
   );
 
-  const managerByPane: Record<number, TabStateManager> = {
+  const tabManagerByPane: Record<number, TabStateManager> = {
     0: left,
     1: right,
   };
@@ -218,16 +200,16 @@ const CrossPaneDragAndDropStory = () => {
     tab: TabItem,
     atIndex?: number,
   ) => {
-    managerByPane[from].removeTab(tab.id);
-    managerByPane[to].addTab(tab, atIndex);
+    tabManagerByPane[from].removeTab(tab.id);
+    tabManagerByPane[to].addTab(tab, atIndex);
   };
 
   return (
     <div style={{ display: 'flex', gap: 16, width: 640 }}>
       {[
-        { paneId: 0, manager: left, label: 'Pane 0' },
-        { paneId: 1, manager: right, label: 'Pane 1' },
-      ].map(({ paneId, manager, label }) => (
+        { paneId: 0, tabManager: left, label: 'Pane 0' },
+        { paneId: 1, tabManager: right, label: 'Pane 1' },
+      ].map(({ paneId, tabManager, label }) => (
         <div
           key={paneId}
           style={{
@@ -248,7 +230,7 @@ const CrossPaneDragAndDropStory = () => {
           </div>
           <TabList
             paneId={paneId}
-            manager={manager}
+            tabManager={tabManager}
             dragAndDropManager={dragManager}
             onTabDrop={({
               tab,
@@ -258,7 +240,7 @@ const CrossPaneDragAndDropStory = () => {
               side,
             }) => {
               if (sourcePaneId === targetPaneId) {
-                const order = managerByPane[targetPaneId]
+                const order = tabManagerByPane[targetPaneId]
                   .getState()
                   .order.slice();
                 const fromIdx = order.indexOf(tab.id);
@@ -266,10 +248,10 @@ const CrossPaneDragAndDropStory = () => {
                 const toIdx =
                   order.indexOf(targetTab.id) + (side === 'right' ? 1 : 0);
                 order.splice(toIdx, 0, tab.id);
-                managerByPane[targetPaneId].reorder(order);
+                tabManagerByPane[targetPaneId].reorder(order);
               } else {
                 const targetIdx =
-                  managerByPane[targetPaneId]
+                  tabManagerByPane[targetPaneId]
                     .getState()
                     .order.indexOf(targetTab.id) + (side === 'right' ? 1 : 0);
                 moveTab(sourcePaneId, targetPaneId, tab, targetIdx);
@@ -277,7 +259,7 @@ const CrossPaneDragAndDropStory = () => {
             }}
             onTabListDrop={({ tab, sourcePaneId, targetPaneId }) => {
               if (sourcePaneId === targetPaneId) {
-                moveToEndWithinPane(managerByPane[targetPaneId], tab.id);
+                moveToEndWithinPane(tabManagerByPane[targetPaneId], tab.id);
                 return;
               }
               moveTab(sourcePaneId, targetPaneId, tab);

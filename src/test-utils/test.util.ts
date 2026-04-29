@@ -3,7 +3,7 @@
  * final builds.
  */
 import { TabStateManager } from '../state/TabStateManager';
-import { type TabItem } from '../types/Tab.type';
+import { type TabDropTargetSide, type TabItem } from '../types/Tab.type';
 
 /**
  * Generates a "Lorem Ipsum" string of exactly n characters.
@@ -29,19 +29,6 @@ export const createLoremIpsumText = (n: number): string => {
 };
 
 /**
- * A function for creating a test list of {@link TabItem}s.
- * @param numTabs - The number of test tabs to create.
- * @param label - The base label to assign to each tab. Optional, defaults to
- *   'Tab'.
- * @returns A list of {@link TabItem}s.
- */
-export const createTabItemList = (numTabs: number, label = 'Tab'): TabItem[] =>
-  Array.from({ length: numTabs }, (_, i) => ({
-    id: i + 1,
-    label: `${label} ${i + 1}`,
-  }));
-
-/**
  * A function for creating a tab manager with the specified tabs.
  * @param tabList - A list of {@link TabItem}s to use with the manager.
  * @param activeId - Optional tab id to set as active.
@@ -62,4 +49,32 @@ export const createTabManager = (
   }
 
   return m;
+};
+
+/**
+ * Same-pane reorder helper — extracts `tabId` from its current position and
+ * inserts it next to `targetTabId` on the indicated `side`.
+ * @param manager - The tabManager that controls the order of the tabs.
+ * @param tabId - The id of the dragged tab.
+ * @param targetTabId - The id of the drop target tab.
+ * @param side - Which side of the drop target tab to place the dragged tab
+ *   onto.
+ */
+export const reorderTabListWithinPane = (
+  manager: TabStateManager,
+  tabId: number,
+  targetTabId: number,
+  side: TabDropTargetSide,
+): void => {
+  const order = manager.getState().order.slice();
+
+  const fromIdx = order.indexOf(tabId);
+  if (fromIdx >= 0) {
+    order.splice(fromIdx, 1);
+  }
+
+  const toIdx = order.indexOf(targetTabId) + (side === 'right' ? 1 : 0);
+  order.splice(toIdx, 0, tabId);
+
+  manager.reorder(order);
 };

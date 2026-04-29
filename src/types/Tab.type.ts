@@ -1,3 +1,5 @@
+import { type ReactNode } from 'react';
+
 export type TabId = number;
 
 export type TabDropTargetSide = 'left' | 'right';
@@ -109,4 +111,24 @@ export type TabItem = {
    * ```
    */
   onClose?: (id: number) => void;
+
+  /**
+   * Renderable content for the tab's body.
+   *
+   * @remarks
+   * {@link StaticTabPane} displays the `content` of the currently active tab
+   * below the {@link TabList}. Omit this field when a tab only participates
+   * in the header (e.g. when you render the body yourself outside the
+   * `StaticTabPane`).
+   *
+   * @example
+   * ```tsx
+   * const tab: TabItem = {
+   *   id: 0,
+   *   label: 'Sample Component',
+   *   content: <SampleComponent {...componentProps} />,
+   * };
+   * ```
+   */
+  content?: ReactNode;
 };

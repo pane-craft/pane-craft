@@ -69,10 +69,10 @@ export type { TabListProps } from '../../types/TabList.type';
  * @see {@link TabListProps} for full prop documentation.
  */
 export const TabList: React.FC<TabListProps> = ({
-  manager,
+  tabManager,
   paneId = 0,
   dragAndDropManager,
-  scrollable = true,
+  isScrollable = true,
   onTabClick,
   onTabClose,
   onTabDrop,
@@ -84,7 +84,7 @@ export const TabList: React.FC<TabListProps> = ({
     state,
     getTabHandlers: getSelectionHandlers,
     tabListHandlers: selectionListHandlers,
-  } = useTabList({ manager, onTabClick, onTabClose });
+  } = useTabList({ manager: tabManager, onTabClick, onTabClose });
 
   const {
     state: dragState,
@@ -155,7 +155,7 @@ export const TabList: React.FC<TabListProps> = ({
       onDrop={dragListHandlers.onDrop}
       {...a11y}
     >
-      {scrollable ? (
+      {isScrollable ? (
         <ScrollPane orientation="horizontal">{listInner}</ScrollPane>
       ) : (
         listInner

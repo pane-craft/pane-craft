@@ -74,8 +74,10 @@ export type DropZoneDropPayload = {
  * @remarks
  * `DropZone` is an overlay that sits inside a pane and exposes one of each of
  * the {@link DropZonePosition} regions as tab drop targets. The overlay is
- * invisible and non-interactive while no drag is in progress; it fades in
- * during a drag and highlights whichever zone the pointer is over.
+ * invisible and non-interactive while no drag is in progress, and stays
+ * invisible while a drag is in flight as long as the pointer is outside the
+ * overlay's bounds. The zones fade in only when the pointer enters the
+ * overlay during a drag, and highlight whichever zone the pointer is over.
  *
  * The component is headless with respect to the consequences of a drop: it
  * fires `onDrop` with the dragged tab and the zone that received it, but
@@ -98,7 +100,7 @@ export type DropZoneProps = BaseComponentProps & {
    * Shared drag state manager.
    *
    * @remarks
-   * Pass the same instance used by the source `TabList`/`TabPane` so the
+   * Pass the same instance used by the source `TabList`/`StaticTabPane` so the
    * overlay can see the in-flight drag. When omitted, an internal manager is
    * created — the overlay will never become visible because no drag will
    * originate inside it.

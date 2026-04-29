@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useEffect, useState } from 'react';
 
 import { useDropZone } from '../../state/useDropZone';
 import '../../styles/tokens-primitive.css';
@@ -26,10 +27,11 @@ const DROP_ZONE_CLASS: Record<DropZonePosition, string> = {
  *
  * @remarks
  * `DropZone` sits absolutely-positioned inside a pane and renders one of each
- * of the {@link DropZonePosition} regions. The overlay is invisible and
- * ignores pointer events while no drag is in progress; it fades in the instant
- * a drag begins on any pane sharing the same `dragAndDropManager` and
- * highlights whichever zone the pointer is over.
+ * of the {@link DropZonePosition} regions. The overlay stays invisible and
+ * ignores pointer events while no drag is in progress, and it remains
+ * invisible while a drag is in flight if the pointer is outside the overlay's
+ * bounding box. The zones only fade in once the dragged item enters the
+ * overlay, and they highlight whichever zone the pointer is over.
  *
  * The component is headless with respect to the consequences of a drop: it
  * fires `onDrop` with the dragged tab and the zone that received it, but
@@ -38,9 +40,9 @@ const DROP_ZONE_CLASS: Record<DropZonePosition, string> = {
  * cross-pane move.
  *
  * The host element must be `position: relative` (or otherwise a containing
- * block) so that the overlay's `inset: 0` fills the pane. Consumers
- * typically place a single `DropZone` as the last child of a `TabPane`'s
- * content region.
+ * block) so that the overlay's `inset: 0` fills the pane. The component is
+ * designed for consumers to place a single `DropZone` as the last child of a
+ * `StaticTabPane`'s content region.
  *
  * @example
  * Single-pane move-only overlay (no split support):
@@ -49,7 +51,7 @@ const DROP_ZONE_CLASS: Record<DropZonePosition, string> = {
  *
  * return (
  *   <div style={{ position: 'relative' }}>
- *     <TabPane dragAndDropManager={dragManager} ... />
+ *     <StaticTabPane dragAndDropManager={dragManager} ... />
  *     <DropZone
  *       paneId={0}
  *       dragAndDropManager={dragManager}
@@ -71,13 +73,58 @@ export const DropZone: React.FC<DropZoneProps> = ({
   className = '',
   a11y = {},
 }) => {
-  const { state, getDropZoneHandlers } = useDropZone({
+  const { state, getDropZoneHandlers, manager } = useDropZone({
     paneId,
     manager: dragAndDropManager,
     onDrop,
   });
 
   const isDragging = state.draggedTab !== null;
+
+  // Visible only when the pointer is currently inside the overlay during a
+  // drag. The drag manager only knows that a drag is in flight, not where the
+  // cursor is, so `isPointerInside` tracks entry/exit on the root here and is
+  // reset by subscribing to the manager's DRAG_ENDED event.
+  const [isPointerInside, setIsPointerInside] = useState(false);
+
+  useEffect(
+    () =>
+      manager.on('DRAG_ENDED', () => {
+        setIsPointerInside(false);
+      }),
+    [manager],
+  );
+
+  const handleRootDragEnter = (e: React.DragEvent<HTMLDivElement>): void => {
+    if (!isDragging) {
+      return;
+    }
+
+    // `dragenter` bubbles from descendants — `relatedTarget` is the element
+    // the pointer is leaving. If it's inside this root, this is an internal
+    // transition (zone-to-zone) and we're already marked inside.
+    const prev = e.relatedTarget as Node | null;
+    if (prev !== null && e.currentTarget.contains(prev)) {
+      return;
+    }
+
+    setIsPointerInside(true);
+  };
+
+  const handleRootDragLeave = (e: React.DragEvent<HTMLDivElement>): void => {
+    if (!isDragging) {
+      return;
+    }
+
+    // `dragleave` bubbles too. `relatedTarget` is the element being entered;
+    // ignore the event if the pointer is still within the overlay tree.
+    const next = e.relatedTarget as Node | null;
+    if (next !== null && e.currentTarget.contains(next)) {
+      return;
+    }
+
+    setIsPointerInside(false);
+  };
 
   const rootClasses = [styles.dropZone, className].filter(Boolean).join(' ');
 
@@ -93,6 +140,9 @@ export const DropZone: React.FC<DropZoneProps> = ({
       data-testid="drop-zone"
       data-pane-id={paneId}
       data-is-dragging={isDragging}
+      data-is-pointer-inside={isPointerInside}
+      onDragEnter={handleRootDragEnter}
+      onDragLeave={handleRootDragLeave}
       {...a11y}
     >
       {dropZonePosList.map((pos) => {

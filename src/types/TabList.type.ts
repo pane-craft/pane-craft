@@ -24,7 +24,7 @@ export { type PaneId } from './Pane.type';
  * - `useTabList` for selection state and keyboard navigation,
  * - `useTabDragAndDrop` for tab drag-and-drop (always enabled), and
  * - `ScrollPane` for horizontal overflow scrolling (toggleable via
- *   {@link TabListProps.scrollable}).
+ *   {@link TabListProps.isScrollable}).
  *
  * Each managed tab is rendered with a `<Tab />`. The component is fully
  * controlled by the supplied (or internally created) state managers — there
@@ -44,7 +44,8 @@ export type TabListProps = BaseComponentProps & {
    * seeded before mount). When omitted, an empty internal manager is created
    * and lives for the component's lifetime.
    */
-  manager?: TabStateManager;
+  tabManager?: TabStateManager;
+
   /**
    * Identifier used by the drag system to distinguish this tab list from
    * other tab lists in the same drag session.
@@ -57,6 +58,7 @@ export type TabListProps = BaseComponentProps & {
    * @default 0
    */
   paneId?: PaneId;
+
   /**
    * Shared drag state manager.
    *
@@ -67,6 +69,7 @@ export type TabListProps = BaseComponentProps & {
    * component but tabs cannot be dragged into or out of other tab lists.
    */
   dragAndDropManager?: DragStateManager;
+
   /**
    * Whether to wrap the tab row in a horizontal `ScrollPane`.
    *
@@ -77,17 +80,20 @@ export type TabListProps = BaseComponentProps & {
    *
    * @default true
    */
-  scrollable?: boolean;
+  isScrollable?: boolean;
+
   /**
    * Called after a tab is activated via click or keyboard. Fires only on
    * actual state change.
    */
   onTabClick?: (tab: TabItem) => void;
+
   /**
    * Called after a tab is removed via the close button. Receives the tab as
    * it existed before removal.
    */
   onTabClose?: (tab: TabItem) => void;
+
   /**
    * Called when a dragged tab is dropped on top of another tab in this list.
    *
@@ -99,6 +105,7 @@ export type TabListProps = BaseComponentProps & {
    * cross-pane drops.
    */
   onTabDrop?: (data: TabDropPayload) => void;
+
   /**
    * Called when a dragged tab is dropped on the empty space of this list.
    * Conventionally treated as "append to the end".
