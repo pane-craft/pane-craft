@@ -8,20 +8,23 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js"
-    },
-    "./styles": "./dist/style.css"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
   },
-  "module": "./dist/index.esm.js",
-  "main": "./dist/index.cjs.js",
-  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "sideEffects": [
     "**/*.css"
   ],
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly --outDir dist/types",
+    "build": "vite build && node -e \"require('fs').copyFileSync('dist/index.d.ts','dist/index.d.cts')\"",
     "build:watch": "vite build --watch",
     "dev": "storybook dev -p 6006",
     "storybook": "storybook dev -p 6006",

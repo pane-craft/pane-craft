@@ -12,12 +12,6 @@ npm i @pane-craft/react
 
 Peer dependencies: `react >= 18` and `react-dom >= 18`.
 
-Import the stylesheet once at your app's entry point:
-
-```ts
-import '@pane-craft/react/styles';
-```
-
 ## Quickstart
 
 ```tsx

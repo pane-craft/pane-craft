@@ -59,10 +59,12 @@ export default defineConfig(({ mode }) => ({
         ...getComponentEntries(resolve(__dirname, 'src/components')),
       },
       formats: ['es', 'cjs'],
-      fileName: (format, entryName) =>
-        entryName === 'index'
-          ? `index.${format === 'es' ? 'esm' : 'cjs'}.js`
-          : `components/${entryName}.${format === 'es' ? 'esm' : 'cjs'}.js`,
+      fileName: (format, entryName) => {
+        const ext = format === 'es' ? 'js' : 'cjs';
+        return entryName === 'index'
+          ? `index.${ext}`
+          : `components/${entryName}.${ext}`;
+      },
     },
 
     rollupOptions: {
