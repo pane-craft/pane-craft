@@ -1,6 +1,6 @@
 {
   "name": "@pane-craft/react",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A component library for creating editor-style functionality, including tabs, split panes, and drag and drop functionality.",
   "type": "module",
   "files": [
@@ -71,6 +71,7 @@
     "react-dom": ">=18.0.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
     "@changesets/cli": "latest",
     "@chromatic-com/storybook": "^5.1.1",
     "@eslint/js": "^9.21.0",
@@ -102,6 +103,7 @@
     "postcss": "^8.5.8",
     "postcss-preset-env": "^11.2.0",
     "prettier": "^3.8.1",
+    "publint": "^0.3.18",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "rollup-plugin-preserve-directives": "^0.4.0",
