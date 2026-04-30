@@ -212,7 +212,7 @@ const PaneTreeNode: React.FC<PaneTreeNodeProps> = ({ node, path, context }) => {
  * `PaneTree` is equally useful for sidebar/editor/preview layouts, diff
  * viewers, or anything else that needs a dynamic, user-resizable pane
  * hierarchy. For the batteries-included combination with the tab system
- * (tabs-per-leaf, drop-to-split), see {@link WorkspacePane}.
+ * (tabs-per-leaf, drop-to-split), see {@link DynamicTabPane}.
  *
  * @example
  * ```tsx

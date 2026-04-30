@@ -135,7 +135,7 @@ const redistributeSizesAfterRemoval = (
  * The manager is structurally content agnostic. Tab panes, editor panes,
  * preview panes — anything with a stable id — can serve as a leaf. For the
  * batteries-included combination with the tab system (tabs-per-leaf,
- * drop-to-split), see {@link WorkspacePane}.
+ * drop-to-split), see {@link DynamicTabPane}.
  *
  * `PaneTreeEvent`:
  * - `LEAF_ADDED` — a new leaf was inserted into an empty tree.
