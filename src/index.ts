@@ -15,10 +15,10 @@ export {
   type DragState,
   type DragEvent,
   type TabDropTargetHoverData,
-  type DropZoneHoverData,
 } from './types/DragStateManager.type';
 export {
   type DropZonePosition,
+  type DropZoneHoverData,
   type DropZoneDropPayload,
   DROP_ZONE_POSITIONS,
 } from './types/DropZone.type';
@@ -48,12 +48,12 @@ export {
 } from './types/useTabList.type';
 export { TabList } from './components/TabList/TabList';
 export { type TabListProps } from './types/TabList.type';
-export { TabPane } from './components/TabPane/TabPane';
-export { type TabPaneProps } from './types/TabPane.type';
+export { StaticTabPane } from './components/StaticTabPane/StaticTabPane';
+export { type StaticTabPaneProps } from './types/StaticTabPane.type';
 export { DropZone } from './components/DropZone/DropZone';
 export { type DropZoneProps } from './types/DropZone.type';
-export { Tabs } from './components/Tabs/Tabs';
-export { type TabsProps } from './types/Tabs.type';
+export { DynamicTabPaneLeaf } from './components/DynamicTabPaneLeaf/DynamicTabPaneLeaf';
+export { type DynamicTabPaneLeafProps } from './types/DynamicTabPaneLeaf.type';
 export {
   useDropZone,
   type UseDropZoneOptions,
@@ -84,14 +84,18 @@ export {
 } from './types/PaneTreeStateManager.type';
 export { type PaneTreeLeaf } from './types/PaneTree.type';
 export {
-  WorkspacePane,
-  type WorkspacePaneProps,
-} from './components/WorkspacePane/WorkspacePane';
+  DynamicTabPane,
+  type DynamicTabPaneProps,
+} from './components/DynamicTabPane/DynamicTabPane';
 export {
-  WorkspacePaneStateManager,
-  type WorkspacePaneStateManagerOptions,
-} from './state/WorkspacePaneStateManager';
+  DynamicTabPaneStateManager,
+  type DynamicTabPaneStateManagerOptions,
+} from './state/DynamicTabPaneStateManager';
 export {
-  type WorkspacePaneState,
-  type WorkspacePaneEvent,
-} from './types/WorkspacePane.type';
+  type DynamicTabPaneState,
+  type DynamicTabPaneEvent,
+  type DynamicTabPaneSnapshot,
+  type DynamicTabNodeSnapshot,
+  type DynamicTabLeafSnapshot,
+  type DynamicTabSplitSnapshot,
+} from './types/DynamicTabPane.type';
