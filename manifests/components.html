@@ -1,0 +1,2961 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Components Manifest</title>
+  <style>
+      :root {
+          --bg: #0b0c10;
+          --panel: #121318;
+          --muted: #9aa0a6;
+          --fg: #e8eaed;
+          --ok: #22c55e;
+          --info: #1e88e5;
+          --err: #c62828;
+          --ok-bg: #0c1a13;
+          --info-bg: #0c1624;
+          --err-bg: #1a0e0e;
+          --chip: #1f2330;
+          --border: #2b2f3a;
+          --link: #8ab4f8;
+          --active-ring: 1px; /* 1px active ring for pills and toggles */
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      html,
+      body {
+          margin: 0;
+          background: var(--bg);
+          color: var(--fg);
+          font: 14px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Ubuntu,
+          Cantarell,
+          'Helvetica Neue',
+          Arial,
+          'Noto Sans';
+      }
+
+      .wrap {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 16px 20px;
+      }
+
+      header {
+          position: sticky;
+          top: 0;
+          backdrop-filter: blur(6px);
+          background: color-mix(in srgb, var(--bg) 84%, transparent);
+          border-bottom: 1px solid var(--border);
+          z-index: 10;
+      }
+
+      h1 {
+          font-size: 20px;
+          margin: 0 0 6px;
+      }
+
+      .summary {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          align-items: center;
+      }
+
+      /* Top filter pills */
+      .filter-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          background: var(--panel);
+          text-decoration: none;
+          cursor: pointer;
+          user-select: none;
+          color: var(--fg);
+      }
+
+      .filter-pill.ok {
+          color: #b9f6ca;
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+          background: color-mix(in srgb, var(--ok) 18%, #000);
+      }
+
+      .filter-pill.info {
+          color: #b3d9ff;
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+          background: var(--info-bg);
+      }
+
+      .filter-pill.err {
+          color: #ff9aa0;
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+          background: var(--err-bg);
+      }
+
+      .filter-pill.all {
+          color: #d7dbe0;
+          border-color: var(--border);
+          background: var(--panel);
+      }
+
+      .filter-pill[aria-disabled='true'] {
+          cursor: default;
+          text-decoration: none;
+      }
+
+      .filter-pill:focus,
+      .filter-pill:active {
+          outline: none;
+          box-shadow: none;
+      }
+
+      /* Selected top pill ring via :target */
+      #filter-all:target ~ header .filter-pill[data-k='all'],
+      #filter-errors:target ~ header .filter-pill[data-k='errors'],
+      #filter-infos:target ~ header .filter-pill[data-k='infos'],
+      #filter-story-errors:target ~ header .filter-pill[data-k='story-errors'],
+      #filter-doc-errors:target ~ header .filter-pill[data-k='docs'],
+      #filter-docs:target ~ header .filter-pill[data-k='docs'] {
+          box-shadow: 0 0 0 var(--active-ring) currentColor;
+          border-color: currentColor;
+      }
+
+      /* Hidden targets for filtering */
+      #filter-all,
+      #filter-errors,
+      #filter-infos,
+      #filter-story-errors,
+      #filter-doc-errors,
+      #filter-docs {
+          display: none;
+      }
+
+      main {
+          padding: 36px 0 40px;
+      }
+
+      .grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 18px;
+      }
+
+      /* one card per row */
+
+      .card {
+          border: 1px solid var(--border);
+          background: var(--panel);
+          border-radius: 14px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      .head {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+      }
+
+      .title {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+      }
+
+      .title h2 {
+          font-size: 16px;
+          margin: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .meta {
+          font-size: 12px;
+          color: var(--muted);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .kv {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+      }
+
+      .chip {
+          font-size: 12px;
+          padding: 4px 8px;
+          border-radius: 999px;
+          background: var(--chip);
+          border: 1px solid var(--border);
+      }
+
+      .hint {
+          color: var(--muted);
+          font-size: 12px;
+      }
+
+      .badges {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+
+      /* Per-card badges: labels become toggles when clickable */
+      .badge {
+          font-size: 12px;
+          padding: 3px 8px;
+          border-radius: 999px;
+          border: 1px solid var(--border);
+          background: var(--chip);
+          color: #d7dbe0;
+      }
+
+      .badge.ok {
+          color: #b9f6ca;
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+      }
+
+      .badge.info {
+          color: #b3d9ff;
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+      }
+
+      .badge.err {
+          color: #ff9aa0;
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+      }
+
+      .as-toggle {
+          cursor: pointer;
+      }
+
+      /* 1px ring on active toggle */
+      .tg-err:checked + label.as-toggle,
+      .tg-info:checked + label.as-toggle,
+      .tg-stories:checked + label.as-toggle,
+      .tg-docs:checked + label.as-toggle,
+      .tg-content:checked + label.as-toggle,
+      .tg-props:checked + label.as-toggle {
+          box-shadow: 0 0 0 var(--active-ring) currentColor;
+          border-color: currentColor;
+      }
+
+      /* Panels: hidden by default, shown when respective toggle checked */
+      .panels {
+          display: grid;
+          gap: 10px;
+      }
+
+      .panel {
+          display: none;
+      }
+
+      .tg-err:checked ~ .panels .panel-err {
+          display: grid;
+      }
+
+      .tg-info:checked ~ .panels .panel-info {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-content:checked ~ .panels .panel-content {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-props:checked ~ .panels .panel-props {
+          display: grid;
+      }
+
+      /* Colored notes for prop type error + info */
+      .note {
+          padding: 12px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+      }
+
+      .note.err {
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+          background: var(--err-bg);
+          color: #ffd1d4;
+      }
+
+      .note.info {
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+          background: var(--info-bg);
+          color: #d6e8ff;
+      }
+
+      .note.ok {
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+          background: var(--ok-bg);
+          color: var(--fg);
+      }
+
+      .note-title {
+          font-weight: 600;
+          margin-bottom: 6px;
+      }
+
+      .note-body {
+          white-space: normal;
+      }
+
+      /* Story error cards */
+      .ex {
+          padding: 10px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          background: #0f131b;
+      }
+
+      .ex.err {
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+      }
+
+      .row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+
+      .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          display: inline-block;
+      }
+
+      .dot-ok {
+          background: var(--ok);
+      }
+
+      .dot-err {
+          background: var(--err);
+      }
+
+      .ex-name {
+          font-weight: 600;
+      }
+
+      /* Error groups (visible in errors filter) */
+      .error-groups {
+          display: none;
+          margin-bottom: 16px;
+      }
+
+      .group {
+          border: 1px solid var(--border);
+          background: var(--panel);
+          border-radius: 14px;
+          overflow: hidden;
+      }
+
+      .group + .group {
+          margin-top: 12px;
+      }
+
+      .group-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 14px;
+          cursor: pointer;
+          border-bottom: 1px solid var(--border);
+      }
+
+      .group-header:hover {
+          background: #141722;
+      }
+
+      .group-title {
+          font-weight: 600;
+          flex: 1;
+      }
+
+      .group-count {
+          font-size: 12px;
+          color: var(--muted);
+      }
+
+      .group-cards {
+          display: none;
+          padding: 12px;
+      }
+
+      .group .card {
+          margin: 12px 0;
+      }
+
+      .group .card:first-child {
+          margin-top: 0;
+      }
+
+      .group .card:last-child {
+          margin-bottom: 0;
+      }
+
+      /* caret rotation */
+      .group-tg:checked + label .caret {
+          transform: rotate(90deg);
+      }
+
+      .caret {
+          transition: transform 0.15s ease;
+      }
+
+      /* toggle body */
+      .group-tg:checked ~ .group-cards {
+          display: block;
+      }
+
+      /* CSS-only filtering of cards via top pills */
+      #filter-errors:target ~ main .card:not(.has-error):not(.has-story-error) {
+          display: none;
+      }
+
+      #filter-infos:target ~ main .card:not(.has-info) {
+          display: none;
+      }
+
+      #filter-story-errors:target ~ main .card:not(.has-story-error) {
+          display: none;
+      }
+
+      #filter-doc-errors:target ~ main .card:not(.has-doc-error) {
+          display: none;
+      }
+
+      #filter-docs:target ~ main .card:has(> .tg-docs),
+      #filter-docs:target ~ main .card.is-doc {
+          display: block;
+      }
+
+      #filter-docs:target ~ main .card:not(:has(> .tg-docs)):not(.is-doc) {
+          display: none;
+      }
+
+      #filter-all:target ~ main .card {
+          display: block;
+      }
+
+      /* In errors view, hide standalone component-error cards in the regular grid (they will appear in groups) */
+      #filter-errors:target ~ main .grid .card.has-error {
+          display: none;
+      }
+
+      /* Show grouped section only in errors view */
+      #filter-errors:target ~ main .error-groups {
+          display: block;
+      }
+
+      /* Section titles */
+      .section-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--muted);
+          margin: 24px 0 12px;
+          padding-bottom: 8px;
+          border-bottom: 1px solid var(--border);
+      }
+      .section-title:first-child {
+          margin-top: 0;
+      }
+
+      /* When a toggle is checked, show the corresponding panel */
+      .card > .tg-err:checked ~ .panels .panel-err {
+          display: grid;
+      }
+      
+      .card > .tg-info:checked ~ .panels .panel-info {
+          display: grid;
+      }
+      
+      .card > .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+      }
+
+      .card > .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+      }
+
+      .card > .tg-content:checked ~ .panels .panel-content {
+          display: grid;
+      }
+
+      /* Add vertical spacing around panels only when any panel is visible */
+      .card > .tg-err:checked ~ .panels,
+      .card > .tg-info:checked ~ .panels,
+      .card > .tg-stories:checked ~ .panels,
+      .card > .tg-docs:checked ~ .panels,
+      .card > .tg-content:checked ~ .panels,
+      .card > .tg-props:checked ~ .panels {
+          margin: 10px 0;
+      }
+
+      /* Optional: a subtle 1px ring on the active badge, using :has() if available */
+      @supports selector(.card:has(.tg-err:checked)) {
+          .card:has(.tg-err:checked) label[for$='-err'],
+          .card:has(.tg-info:checked) label[for$='-info'],
+          .card:has(.tg-stories:checked) label[for$='-stories'],
+          .card:has(.tg-docs:checked) label[for$='-docs'],
+          .card:has(.tg-content:checked) label[for$='-content'],
+          .card:has(.tg-props:checked) label[for$='-props'] {
+              box-shadow: 0 0 0 1px currentColor;
+              border-color: currentColor;
+          }
+      }
+
+      /* Wrap long lines in code blocks at ~120 characters */
+      pre, code {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      }
+      pre {
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          overflow-x: auto; /* fallback for extremely long tokens */
+          margin: 8px 0 0;
+      }
+      pre > code {
+          display: block;
+          white-space: inherit;
+          overflow-wrap: inherit;
+          word-break: inherit;
+          inline-size: min(100%, 120ch);
+      }
+
+      /* MDX content container for docs */
+      .mdx-content {
+          background: #0f131b;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          padding: 12px;
+          max-height: 400px;
+          overflow-y: auto;
+          margin-top: 8px;
+      }
+  </style>
+</head>
+<body>
+<!-- Hidden targets for the top-level filters -->
+<span id="filter-all"></span>
+<span id="filter-errors"></span>
+<span id="filter-infos"></span>
+<span id="filter-story-errors"></span>
+<span id="filter-doc-errors"></span>
+<span id="filter-docs"></span>
+<header>
+  <div class="wrap">
+    <h1>Manifest Debugger</h1>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">9 components ok</span><span class="filter-pill ok" aria-disabled="true">43 stories ok</span></div>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+    <div class="note ok" style="margin-bottom: 16px;">
+              Using <code>react-docgen-typescript</code>. Generation took <strong>2.5s</strong>.
+            </div>
+    <h2 class="section-title">Components</h2>
+    <div class="grid" role="list">
+      
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="DropZone">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> DropZone</h2>
+      <div class="badges">
+        <label for="c-0-core-dropzone-props" class="badge ok as-toggle">7 prop types</label>
+        
+        <label for="c-0-core-dropzone-stories" class="badge ok as-toggle">2 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/DropZone/DropZone.stories.tsx">core-dropzone · ./src/components/DropZone/DropZone.stories.tsx</div>
+    
+    <div class="hint">An overlay that exposes {@link DropZonePosition} regions inside a pane as tab drop targets.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-0-core-dropzone-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-0-core-dropzone-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">7 prop types</span>
+            </div>
+            <pre><code>Component: src\components\DropZone\DropZone.tsx::DropZone</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * ARIA and accessibility attributes forwarded to the root element.
+ * @remarks Accepts any valid ARIA attribute (role, aria-*, tabIndex, etc.).
+ * This lets consumers compose accessible patterns (e.g. tab lists)
+ * without the component needing to know about them.
+ * @example ```tsx
+ * &lt;Tab a11y={{ role: &#39;tab&#39;, tabIndex: 0, &#39;aria-selected&#39;: isActive }} /&gt;
+ * ```
+ */
+a11y?: (AriaAttributes &amp; { role?: AriaRole; tabIndex?: number; }) | undefined = {}
+
+/**
+ * Additional CSS class names merged onto the root element.
+ */
+className?: string
+
+/**
+ * Shared drag state manager.
+ * @remarks Pass the same instance used by the source `TabList`/`StaticTabPane` so the
+ * overlay can see the in-flight drag. When omitted, an internal manager is
+ * created — the overlay will never become visible because no drag will
+ * originate inside it.
+ */
+dragAndDropManager?: DragStateManager
+
+/**
+ * Which zones to render. Useful for panes that should only accept certain
+ * drop actions (e.g. a leaf pane that cannot be split further might pass
+ * `[&#39;center&#39;]` to only accept moves).
+ */
+dropZonePosList?: readonly DropZonePosition[] = [
+  &#39;center&#39;,
+  &#39;top&#39;,
+  &#39;bottom&#39;,
+  &#39;left&#39;,
+  &#39;right&#39;,
+]
+
+/**
+ * Size of the edge zones (`top`, `bottom`, `left`, `right`) as a CSS
+ * length. `center` fills the remaining area.
+ * @remarks Accepts any CSS `&lt;length&gt;` or `&lt;percentage&gt;` value — e.g. `&#39;30%&#39;`,
+ * `&#39;4rem&#39;`, or a custom property reference.
+ */
+edgeSize?: string = &#39;30%&#39;
+
+/**
+ * Called when a dragged tab is dropped on one of this overlay&#39;s zones.
+ */
+onDrop?: ((data: DropZoneDropPayload) =&gt; void)
+
+/**
+ * Identifier of the pane the overlay belongs to.
+ * @remarks Reported back to the consumer in `onDrop` as `targetPaneId`, and written
+ * into the shared drag manager via `DropZoneHoverData.paneId` so that
+ * cross-pane drag sessions can distinguish one pane&#39;s zones from another&#39;s.
+ */
+paneId?: number = 0</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { DropZone } from "@pane-craft/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Basic Overlay</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A stand-alone `DropZone` overlaying a single draggable card. The overlay only becomes interactive while the card is in flight. Drops print the chosen zone to the console.</div>
+              <pre><code>const BasicOverlay = () =&gt; {
+    const dragManager = useMemo(() =&gt; new DragStateManager(), []);
+    const tab: TabItem = { id: 1, label: &#39;Drag Test&#39; };
+    const [lastDrop, setLastDrop] = useState&lt;DropZonePosition | null&gt;(null);
+
+    return (
+        &lt;div
+            style={{
+              position: &#39;relative&#39;,
+              width: 480,
+              height: 320,
+              background: &#39;#1e1e1e&#39;,
+              border: &#39;1px solid #3c3c3c&#39;,
+              color: &#39;#d4d4d4&#39;,
+              fontFamily: &#39;ui-monospace, monospace&#39;,
+              fontSize: 13,
+            }}&gt;
+            &lt;div style={{ padding: 16 }}&gt;
+                &lt;div
+                    draggable
+                    onDragStart={(e) =&gt; {
+                      e.dataTransfer.effectAllowed = &#39;move&#39;;
+                      e.dataTransfer.setData(&#39;text/plain&#39;, String(tab.id));
+                      dragManager.start(tab, 0);
+                    }}
+                    onDragEnd={() =&gt; {
+                      dragManager.end();
+                    }}
+                    style={{
+                      display: &#39;inline-block&#39;,
+                      padding: &#39;8px 12px&#39;,
+                      background: &#39;#2d2d30&#39;,
+                      border: &#39;1px solid #3c3c3c&#39;,
+                      borderRadius: 4,
+                      cursor: &#39;grab&#39;,
+                    }}&gt;Click me to drag. Drop me on any zone.
+                            &lt;/div&gt;
+                &lt;div style={{ marginTop: 16 }}&gt;Last drop: {lastDrop ?? &#39;—&#39;}&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;DropZone
+                dragAndDropManager={dragManager}
+                onDrop={({ pos }) =&gt; {
+                  console.log(&#39;dropped on&#39;, pos);
+                  setLastDrop(pos);
+                }} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Custom Edge Size</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Same overlay as `BasicOverlay`, but with the four edge zones made smaller via the `edgeSize` prop. The prop accepts any CSS `&lt;length&gt;` or `&lt;percentage&gt;` value — `&#39;15%&#39;` changes size based on the parent&#39;s size, but fixed-width options such as `rem` are available as well. Try editing the `edgeSize` control in the Storybook panel (e.g. `&#39;10%&#39;`, `&#39;8rem&#39;`, `&#39;80px&#39;`) to see the edges resize live.</div>
+              <pre><code>const CustomEdgeSize = () =&gt; {
+    const dragManager = useMemo(() =&gt; new DragStateManager(), []);
+    const tab: TabItem = { id: 1, label: &#39;Drag Test&#39; };
+    const [lastDrop, setLastDrop] = useState&lt;DropZonePosition | null&gt;(null);
+
+    return (
+        &lt;div
+            style={{
+              position: &#39;relative&#39;,
+              width: 480,
+              height: 320,
+              background: &#39;#1e1e1e&#39;,
+              border: &#39;1px solid #3c3c3c&#39;,
+              color: &#39;#d4d4d4&#39;,
+              fontFamily: &#39;ui-monospace, monospace&#39;,
+              fontSize: 13,
+            }}&gt;
+            &lt;div style={{ padding: 16 }}&gt;
+                &lt;div
+                    draggable
+                    onDragStart={(e) =&gt; {
+                      e.dataTransfer.effectAllowed = &#39;move&#39;;
+                      e.dataTransfer.setData(&#39;text/plain&#39;, String(tab.id));
+                      dragManager.start(tab, 0);
+                    }}
+                    onDragEnd={() =&gt; {
+                      dragManager.end();
+                    }}
+                    style={{
+                      display: &#39;inline-block&#39;,
+                      padding: &#39;8px 12px&#39;,
+                      background: &#39;#2d2d30&#39;,
+                      border: &#39;1px solid #3c3c3c&#39;,
+                      borderRadius: 4,
+                      cursor: &#39;grab&#39;,
+                    }}&gt;Click me to drag. Drop me on any zone.
+                            &lt;/div&gt;
+                &lt;div style={{ marginTop: 16 }}&gt;Last drop: {lastDrop ?? &#39;—&#39;}&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;DropZone
+                edgeSize=&quot;15%&quot;
+                dragAndDropManager={dragManager}
+                onDrop={({ pos }) =&gt; {
+                  console.log(&#39;dropped on&#39;, pos);
+                  setLastDrop(pos);
+                }} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="DynamicTabPane">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> DynamicTabPane</h2>
+      <div class="badges">
+        <label for="c-1-composite-dynamictabpane-props" class="badge ok as-toggle">15 prop types</label>
+        
+        <label for="c-1-composite-dynamictabpane-stories" class="badge ok as-toggle">3 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/DynamicTabPane/DynamicTabPane.stories.tsx">composite-dynamictabpane · ./src/components/DynamicTabPane/DynamicTabPane.stories.tsx</div>
+    
+    <div class="hint">The batteries-included dynamic tab pane, managing the tree of split panes and tab lifecycles for each nested tab pane.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-1-composite-dynamictabpane-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-1-composite-dynamictabpane-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">15 prop types</span>
+            </div>
+            <pre><code>Component: src\components\DynamicTabPane\DynamicTabPane.tsx::DynamicTabPane</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * ARIA and accessibility attributes forwarded to the root element.
+ * @remarks Accepts any valid ARIA attribute (role, aria-*, tabIndex, etc.).
+ * This lets consumers compose accessible patterns (e.g. tab lists)
+ * without the component needing to know about them.
+ * @example ```tsx
+ * &lt;Tab a11y={{ role: &#39;tab&#39;, tabIndex: 0, &#39;aria-selected&#39;: isActive }} /&gt;
+ * ```
+ */
+a11y?: (AriaAttributes &amp; { role?: AriaRole; tabIndex?: number; }) | undefined = {}
+
+/**
+ * Additional CSS class names merged onto the root element.
+ */
+className?: string
+
+/**
+ * Extra class name forwarded to each leaf&#39;s content region.
+ */
+contentClassName?: string
+
+/**
+ * When `true`, splitters are disabled and cross-pane drag-and-drop is
+ * suppressed. Tabs within a single pane remain interactive.
+ */
+disabled?: boolean = false
+
+/**
+ * Extra class name forwarded to each leaf&#39;s `DropZone`.
+ */
+dropZoneClassName?: string
+
+/**
+ * Which drop zone overlays are rendered on each leaf.
+ */
+dropZonePosList?: readonly DropZonePosition[] = [&#39;center&#39;, &#39;top&#39;, &#39;bottom&#39;, &#39;left&#39;, &#39;right&#39;]
+
+/**
+ * CSS length for the edge zones. Passed to each leaf&#39;s `DropZone`.
+ */
+edgeSize?: string = &#39;30%&#39;
+
+/**
+ * Rendered when the dynamic pane is completely empty (no leaves at all).
+ */
+emptyContent?: ReactNode = null
+
+/**
+ * Rendered inside a leaf&#39;s content area when that leaf has no active tab.
+ */
+emptyPaneContent?: ReactNode = null
+
+/**
+ * Extra class name applied to each leaf wrapper.
+ */
+leafClassName?: string
+
+/**
+ * The dynamic tab pane state manager.
+ * @remarks The component subscribes to it and re-renders on both dynamic pane-level
+ * changes (active leaf) and tree-level changes (splits, removals). Per-pane
+ * tab changes are observed by the nested {@link DynamicTabPaneLeaf }
+ * instances.
+ */
+manager: DynamicTabPaneStateManager
+
+/**
+ * Minimum size for any pane at a split, as a percentage of its parent
+ * split. Splitter drags are clamped so no adjacent pane shrinks below this.
+ */
+minSize?: number = 10
+
+/**
+ * Extra class name applied to each split container.
+ */
+splitClassName?: string
+
+/**
+ * Extra class name applied to each splitter.
+ */
+splitterClassName?: string
+
+/**
+ * Extra class name forwarded to each leaf&#39;s `TabList`.
+ */
+tabListClassName?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { DynamicTabPane } from "@pane-craft/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Basic</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Three tabs in a single pane, declared up-front via `initialSnapshot`. Drag a tab to any edge to split; drop on the center to move across panes; drop on another tab to reorder. Close the last tab in a pane and the pane collapses automatically.</div>
+              <pre><code>const Basic = () =&gt; &lt;BasicStory /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Ide Layout</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Pre-seeded multi-pane layout that mimics an IDE: a sidebar pane on the left, an editor pane in the middle, and a terminal-style pane below. The entire layout — including pane sizes, tab distribution, and the active leaf — is declared in a single `initialSnapshot`. All three panes share a single drag manager, so tabs can be dragged freely between any pane and dropped on edges to create further splits.</div>
+              <pre><code>const IdeLayout = () =&gt; &lt;IdeLayoutStory /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Interactive Playground</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Empty dynamic pane with custom `emptyContent`. Demonstrates the runtime API: `openTab` adds a tab to the active leaf (creating a leaf if the dynamic pane is empty), and `splitLeafWithTab` carves the active leaf into a new sibling pane on the chosen edge. Useful for exploring behavior without drag-and-drop.</div>
+              <pre><code>const InteractivePlayground = () =&gt; &lt;InteractivePlaygroundStory /&gt;;</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="DynamicTabPaneLeaf">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> DynamicTabPaneLeaf</h2>
+      <div class="badges">
+        <label for="c-2-composite-dynamictabpaneleaf-props" class="badge ok as-toggle">17 prop types</label>
+        
+        <label for="c-2-composite-dynamictabpaneleaf-stories" class="badge ok as-toggle">4 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/DynamicTabPaneLeaf/DynamicTabPaneLeaf.stories.tsx">composite-dynamictabpaneleaf · ./src/components/DynamicTabPaneLeaf/DynamicTabPaneLeaf.stories.tsx</div>
+    
+    <div class="hint">The batteries-included leaf pane: `StaticTabPane` plus a `DropZone` overlay on the content region.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-2-composite-dynamictabpaneleaf-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-2-composite-dynamictabpaneleaf-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">17 prop types</span>
+            </div>
+            <pre><code>Component: src\components\DynamicTabPaneLeaf\DynamicTabPaneLeaf.tsx::DynamicTabPaneLeaf</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * ARIA and accessibility attributes forwarded to the root element.
+ * @remarks Accepts any valid ARIA attribute (role, aria-*, tabIndex, etc.).
+ * This lets consumers compose accessible patterns (e.g. tab lists)
+ * without the component needing to know about them.
+ * @example ```tsx
+ * &lt;Tab a11y={{ role: &#39;tab&#39;, tabIndex: 0, &#39;aria-selected&#39;: isActive }} /&gt;
+ * ```
+ */
+a11y?: (AriaAttributes &amp; { role?: AriaRole; tabIndex?: number; }) | undefined = {}
+
+/**
+ * Additional CSS class names merged onto the root element.
+ */
+className?: string
+
+/**
+ * Extra class name merged onto the content region.
+ */
+contentClassName?: string
+
+/**
+ * Shared drag state manager.
+ * @remarks Forwarded to both the internal `StaticTabPane` and `DropZone`, so the
+ * overlay reacts to drags that originate in the tab bar (or in any other
+ * `DynamicTabPaneLeaf` sharing the same manager). When omitted, an internal
+ * manager is created — cross-pane drag-and-drop will not work.
+ */
+dragAndDropManager?: DragStateManager
+
+/**
+ * Extra class name merged onto the internal `DropZone` root element.
+ */
+dropZoneClassName?: string
+
+/**
+ * Which drop zones to render. Useful for panes that should not be
+ * splittable — pass `[&#39;center&#39;]` to only accept cross-pane moves.
+ */
+dropZonePosList?: readonly DropZonePosition[] = [&#39;center&#39;, &#39;top&#39;, &#39;bottom&#39;, &#39;left&#39;, &#39;right&#39;]
+
+/**
+ * Size of the edge zones as a CSS length (e.g. `&#39;30%&#39;`, `&#39;4rem&#39;`).
+ */
+edgeSize?: string = &#39;30%&#39;
+
+/**
+ * Rendered inside the content region when no tab is active.
+ */
+emptyContent?: ReactNode = null
+
+/**
+ * Whether the tab header should scroll horizontally when tabs overflow.
+ */
+isScrollable?: boolean = true
+
+/**
+ * Called when a tab is dropped on one of this pane&#39;s content-area zones.
+ * @remarks `pos === &#39;center&#39;` is generally interpreted as &quot;move the tab into this
+ * pane&quot;; edge positions are generally interpreted as &quot;split the pane on that
+ * side and place the tab in the new sub-pane&quot;. The component itself performs
+ * neither — the it&#39;s up to the consumer to implement these behaviors.
+ */
+onDropZoneDrop?: ((data: DropZoneDropPayload) =&gt; void)
+
+/**
+ * Called after a tab is activated via click or keyboard.
+ */
+onTabClick?: ((tab: TabItem) =&gt; void)
+
+/**
+ * Called after a tab is removed via the close button.
+ */
+onTabClose?: ((tab: TabItem) =&gt; void)
+
+/**
+ * Called when a tab is dropped on another tab in this pane&#39;s header.
+ */
+onTabDrop?: ((data: TabDropPayload) =&gt; void)
+
+/**
+ * Called when a tab is dropped on empty space in this pane&#39;s header.
+ */
+onTabListDrop?: ((data: TabListDropPayload) =&gt; void)
+
+/**
+ * Identifier used by the drag system to distinguish this pane from other
+ * panes in the same drag session.
+ * @remarks Cross-pane drag-and-drop requires every participating `DynamicTabPaneLeaf`
+ * to share a single `dragAndDropManager` and have a unique `paneId`.
+ */
+paneId?: number = 0
+
+/**
+ * Extra class name merged onto the internal `TabList` root element.
+ */
+tabListClassName?: string
+
+/**
+ * Tab state manager that owns the tab collection.
+ * @remarks Pass one in when the tab data is owned outside the component. When
+ * omitted, an empty internal manager is created and lives for the
+ * component&#39;s lifetime.
+ */
+tabManager?: TabStateManager</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { DynamicTabPaneLeaf } from "@pane-craft/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The default `DynamicTabPaneLeaf` leaf pane. The tab bar handles reordering; the content area&#39;s drop zones fire `onDropZoneDrop` (logged here). Splits are controlled by the `PaneTree`, so nothing actually splits in this story.</div>
+              <pre><code>const Default = () =&gt; {
+    const tabManager = useMemo(() =&gt; createTabManager(TABS, 1), []);
+    const [lastZone, setLastZone] = useState&lt;DropZonePosition | null&gt;(null);
+
+    return (
+        &lt;&gt;
+            &lt;DynamicTabPaneLeaf
+                tabManager={tabManager}
+                onTabClick={(t) =&gt; {
+                  console.log(&#39;click&#39;, t.id);
+                }}
+                onTabClose={(t) =&gt; {
+                  console.log(&#39;close&#39;, t.id);
+                }}
+                onTabDrop={({ tab, targetTab, side }) =&gt; {
+                  reorderTabListWithinPane(tabManager, tab.id, targetTab.id, side);
+                }}
+                onDropZoneDrop={({ tab, pos }) =&gt; {
+                  console.log(&#39;zone drop&#39;, tab.id, pos);
+                  setLastZone(pos);
+                }} /&gt;
+            &lt;div
+                style={{
+                  position: &#39;absolute&#39;,
+                  bottom: 8,
+                  left: 8,
+                  fontSize: 11,
+                  color: &#39;#6a6a6a&#39;,
+                }}&gt;last zone drop: {lastZone ?? &#39;—&#39;}
+            &lt;/div&gt;
+        &lt;/&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Cross Pane Drag And Drop</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Two `DynamicTabPaneLeaf`s sharing one `DragStateManager`. `DynamicTabPaneLeaf` can be dragged between panes (tab bar), and the content-area drop zones can accept cross-pane moves and logged &quot;split&quot; intents. The `onDropZoneDrop` handler below interprets `center` as a move and the edge zones as *logged* splits (a real pane tree would actually split).</div>
+              <pre><code>const CrossPaneDragAndDrop = () =&gt; {
+  const dragManager = useMemo(() =&gt; new DragStateManager(), []);
+  const left = useMemo(
+    () =&gt; createTabManager(createTabItemList(2, &#39;Left Tab&#39;, 11), 11),
+    [],
+  );
+  const right = useMemo(
+    () =&gt; createTabManager(createTabItemList(1, &#39;Right Tab&#39;, 21), 21),
+    [],
+  );
+
+  const tabManagerByPane: Record&lt;number, TabStateManager&gt; = {
+    0: left,
+    1: right,
+  };
+
+  const moveTab = (
+    from: number,
+    to: number,
+    tab: TabItem,
+    atIndex?: number,
+  ) =&gt; {
+    tabManagerByPane[from].removeTab(tab.id);
+    tabManagerByPane[to].addTab(tab, atIndex);
+  };
+
+  return (
+    &lt;div style={{ display: &#39;flex&#39;, gap: 16, width: 880, height: 320 }}&gt;
+      {[
+        { paneId: 0 as const, manager: left, label: &#39;Pane 0&#39; },
+        { paneId: 1 as const, manager: right, label: &#39;Pane 1&#39; },
+      ].map(({ paneId, manager, label }) =&gt; (
+        &lt;div
+          key={paneId}
+          style={{
+            flex: 1,
+            display: &#39;flex&#39;,
+            flexDirection: &#39;column&#39;,
+            background: &#39;#1e1e1e&#39;,
+            border: &#39;1px solid #3c3c3c&#39;,
+            padding: 4,
+            minHeight: 0,
+          }}
+        &gt;
+          &lt;div
+            style={{
+              color: &#39;#888&#39;,
+              fontSize: 11,
+              padding: &#39;0 4px 4px&#39;,
+            }}
+          &gt;
+            {label}
+          &lt;/div&gt;
+          &lt;DynamicTabPaneLeaf
+            paneId={paneId}
+            tabManager={manager}
+            dragAndDropManager={dragManager}
+            onTabDrop={({
+              tab,
+              sourcePaneId,
+              targetPaneId,
+              targetTab,
+              side,
+            }) =&gt; {
+              if (sourcePaneId === targetPaneId) {
+                reorderTabListWithinPane(
+                  tabManagerByPane[targetPaneId],
+                  tab.id,
+                  targetTab.id,
+                  side,
+                );
+              } else {
+                const targetIdx =
+                  tabManagerByPane[targetPaneId]
+                    .getState()
+                    .order.indexOf(targetTab.id) + (side === &#39;right&#39; ? 1 : 0);
+                moveTab(sourcePaneId, targetPaneId, tab, targetIdx);
+              }
+            }}
+            onTabListDrop={({ tab, sourcePaneId, targetPaneId }) =&gt; {
+              if (sourcePaneId === targetPaneId) {
+                return;
+              }
+              moveTab(sourcePaneId, targetPaneId, tab);
+            }}
+            onDropZoneDrop={({ tab, sourcePaneId, targetPaneId, pos }) =&gt; {
+              if (pos === &#39;center&#39;) {
+                if (sourcePaneId === targetPaneId) {
+                  return;
+                }
+                moveTab(sourcePaneId, targetPaneId, tab);
+              } else {
+                // A real app would split `targetPaneId` on `pos` and place
+                // `tab` in the new sub-pane. Log demonstratively.
+                console.log(
+                  &#39;split&#39;,
+                  targetPaneId,
+                  &#39;on&#39;,
+                  pos,
+                  &#39;with&#39;,
+                  tab.label,
+                );
+              }
+            }}
+          /&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Center Only</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A leaf pane that refuses splits: `dropZonePosList={[&#39;center&#39;]}` so only cross-pane moves are accepted by the content-area overlay.</div>
+              <pre><code>const CenterOnly = () =&gt; {
+    const tabManager = useMemo(() =&gt; createTabManager(TABS, 1), []);
+
+    return (
+        &lt;DynamicTabPaneLeaf
+            dropZonePosList={[&#39;center&#39;]}
+            tabManager={tabManager}
+            onTabDrop={({ tab, targetTab, side }) =&gt; {
+              reorderTabListWithinPane(tabManager, tab.id, targetTab.id, side);
+            }}
+            onDropZoneDrop={({ pos }) =&gt; {
+              console.log(&#39;dropped on&#39;, pos);
+            }} /&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Empty</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An empty leaf pane with custom empty content. The drop zone overlay still appears during a drag, so the pane can accept a move even when empty.</div>
+              <pre><code>const Empty = () =&gt; {
+    const tabManager = useMemo(() =&gt; new TabStateManager(), []);
+
+    return (
+        &lt;DynamicTabPaneLeaf
+            tabManager={tabManager}
+            emptyContent={
+              &lt;div
+                style={{
+                  padding: 16,
+                  color: &#39;#6a6a6a&#39;,
+                  fontStyle: &#39;italic&#39;,
+                  fontFamily: &#39;ui-monospace, monospace&#39;,
+                  fontSize: 13,
+                }}
+              &gt;
+                No files are open. Drop a tab here to add one.
+              &lt;/div&gt;
+            } /&gt;
+    );
+};</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="PaneTree">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> PaneTree</h2>
+      <div class="badges">
+        <label for="c-3-composite-panetree-props" class="badge ok as-toggle">10 prop types</label>
+        
+        <label for="c-3-composite-panetree-stories" class="badge ok as-toggle">3 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/PaneTree/PaneTree.stories.tsx">composite-panetree · ./src/components/PaneTree/PaneTree.stories.tsx</div>
+    
+    <div class="hint">Recursive renderer controlled by a {@link PaneTreeStateManager}.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-3-composite-panetree-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-3-composite-panetree-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">10 prop types</span>
+            </div>
+            <pre><code>Component: src\components\PaneTree\PaneTree.tsx::PaneTree</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * ARIA and accessibility attributes forwarded to the root element.
+ * @remarks Accepts any valid ARIA attribute (role, aria-*, tabIndex, etc.).
+ * This lets consumers compose accessible patterns (e.g. tab lists)
+ * without the component needing to know about them.
+ * @example ```tsx
+ * &lt;Tab a11y={{ role: &#39;tab&#39;, tabIndex: 0, &#39;aria-selected&#39;: isActive }} /&gt;
+ * ```
+ */
+a11y?: (AriaAttributes &amp; { role?: AriaRole; tabIndex?: number; }) | undefined = {}
+
+/**
+ * Additional CSS class names merged onto the root element.
+ */
+className?: string
+
+/**
+ * When `true`, all splitters are disabled; the tree remains visible but
+ * is not resizable.
+ */
+disabled?: boolean = false
+
+/**
+ * Rendered when the tree is empty (root is `null`). Receives no props.
+ */
+emptyContent?: ReactNode = null
+
+/**
+ * Extra class name applied to each leaf wrapper.
+ */
+leafClassName?: string
+
+/**
+ * The pane tree state manager. The component subscribes to it and
+ * re-renders whenever the tree mutates.
+ */
+manager: PaneTreeStateManager
+
+/**
+ * Minimum size for any pane at a split, as a percentage of its parent
+ * split. Splitter drags are clamped so no adjacent pane shrinks below
+ * this.
+ */
+minSize?: number = 10
+
+/**
+ * Called once per leaf to produce the content for that cell.
+ * @remarks The return value is wrapped in a `div` with `data-testid=&quot;pane-tree-leaf&quot;`
+ * and `data-leaf-id={id}`. The wrapper fills its slot (`&#39;100%&#39;` width and
+ * height); the consumer&#39;s content should be a flexible layout (e.g. a pane
+ * component that fills its parent).
+ * 
+ * Because the tree mutates by re-pointing leaf ids across splits, any
+ * per-leaf React state that should survive structural changes must be
+ * owned outside this function (lifted to a parent or a store).
+ */
+renderLeaf: (leaf: PaneTreeLeaf) =&gt; ReactNode
+
+/**
+ * Extra class name applied to each split container.
+ */
+splitClassName?: string
+
+/**
+ * Extra class name applied to each splitter.
+ */
+splitterClassName?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { PaneTree } from "@pane-craft/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Three Pane Layout</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Demonstrates the three-pane IDE-style layout: sidebar | (editor / terminal). Drag the splitters to resize — sizes propagate through the manager and are persisted in the tree state.</div>
+              <pre><code>const ThreePaneLayout = () =&gt; &lt;ThreePaneLayoutStory /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Interactive Splitting</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An interactive playground: split the focused leaf in any direction via the toolbar at the bottom. Demonstrates all four `splitLeaf` sides plus `removeLeaf` with single-child collapse behaviour.</div>
+              <pre><code>const InteractiveSplitting = () =&gt; &lt;InteractiveSplittingStory /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Empty</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An empty tree with custom `emptyContent`. Demonstrates how the renderer handles the &quot;no root&quot; case without crashing.</div>
+              <pre><code>const Empty = () =&gt; &lt;EmptyStory /&gt;;</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="ScrollPane">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> ScrollPane</h2>
+      <div class="badges">
+        <label for="c-4-core-scrollpane-props" class="badge ok as-toggle">8 prop types</label>
+        
+        <label for="c-4-core-scrollpane-stories" class="badge ok as-toggle">5 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/ScrollPane/ScrollPane.stories.tsx">core-scrollpane · ./src/components/ScrollPane/ScrollPane.stories.tsx</div>
+    
+    <div class="hint">A generic scrolling container with a custom, auto-hiding scrollbar.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-4-core-scrollpane-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-4-core-scrollpane-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">8 prop types</span>
+            </div>
+            <pre><code>Component: src\components\ScrollPane\ScrollPane.tsx::ScrollPane</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * ARIA and accessibility attributes forwarded to the root element.
+ * @remarks Accepts any valid ARIA attribute (role, aria-*, tabIndex, etc.).
+ * This lets consumers compose accessible patterns (e.g. tab lists)
+ * without the component needing to know about them.
+ * @example ```tsx
+ * &lt;Tab a11y={{ role: &#39;tab&#39;, tabIndex: 0, &#39;aria-selected&#39;: isActive }} /&gt;
+ * ```
+ */
+a11y?: (AriaAttributes &amp; { role?: AriaRole; tabIndex?: number; }) | undefined = {}
+
+/**
+ * When `true`, the scrollbar is hidden until the user hovers the pane or is
+ * actively dragging the thumb. When `false`, the scrollbar is always
+ * visible. Scrollbar is not visible regardless when there&#39;s no overflow.
+ */
+autoHide?: boolean = true
+
+/**
+ * The content rendered inside the scrollable viewport.
+ * @remarks For horizontal panes the content is laid out in an `inline-flex`
+ * wrapper with `min-width: max-content`, so children determine the
+ * content width. For vertical panes the wrapper uses
+ * `min-height: max-content`.
+ */
+children?: ReactNode
+
+/**
+ * Additional CSS class names merged onto the root element.
+ */
+className?: string
+
+/**
+ * Scroll axis of the pane.
+ */
+orientation?: Orientation = horizontal
+
+/**
+ * Minimum pixel length of the scrollbar thumb to ensure the thumb is always
+ * usable, even with large content overflows.
+ */
+thumbSizeMin?: number = 20
+
+/**
+ * Behavior when the user clicks the scrollbar track outside of the thumb.
+ * @remarks - `&#39;jump&#39;` — the thumb jumps so that its center is at the click position.
+ * - `&#39;increment&#39;` — the content moves ~80% of the viewport size.
+ */
+trackClickMode?: ScrollClickMode = &#39;jump&#39; as ScrollClickMode
+
+/**
+ * When `true` and `orientation` is `&#39;horizontal&#39;`, vertical wheel deltas
+ * are converted into horizontal scrolling and the native vertical scroll
+ * is suppressed.
+ * @remarks Has no effect for `&#39;vertical&#39;` orientation — the browser already handles
+ * vertical wheel scrolling natively.
+ */
+wheelToScroll?: boolean = true</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ScrollPane } from "@pane-craft/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Horizontal Overflow</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Demonstrates horizontal overflow using a long string of generated text.</div>
+              <pre><code>const HorizontalOverflow = () =&gt; &lt;ScrollPane orientation=&quot;horizontal&quot;&gt;(&lt;div style={{ ...TEXT_STYLE, whiteSpace: &#39;nowrap&#39; }}&gt;
+      {createLoremIpsumText(500)}
+    &lt;/div&gt;)&lt;/ScrollPane&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Vertical Overflow</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A vertical scroll pane wrapping a large block of generated text.</div>
+              <pre><code>const VerticalOverflow = () =&gt; &lt;ScrollPane orientation=&quot;vertical&quot;&gt;&lt;div style={TEXT_STYLE}&gt;{createLoremIpsumText(2000)}&lt;/div&gt;&lt;/ScrollPane&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">No Overflow</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">When content is short enough to fit, the scrollbar is automatically hidden.</div>
+              <pre><code>const NoOverflow = () =&gt; &lt;ScrollPane orientation=&quot;horizontal&quot;&gt;&lt;div style={TEXT_STYLE}&gt;{createLoremIpsumText(17)}&lt;/div&gt;&lt;/ScrollPane&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Always Visible</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Disabling `autoHide` keeps the scrollbar visible as long as there is overflow.</div>
+              <pre><code>const AlwaysVisible = () =&gt; &lt;ScrollPane orientation=&quot;horizontal&quot; autoHide={false}&gt;(&lt;div style={{ ...TEXT_STYLE, whiteSpace: &#39;nowrap&#39; }}&gt;
+      {createLoremIpsumText(500)}
+    &lt;/div&gt;)&lt;/ScrollPane&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Increment Interaction</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Clicks on the track move the scroll position by increments rather than jumping.</div>
+              <pre><code>const IncrementInteraction = () =&gt; &lt;ScrollPane orientation=&quot;horizontal&quot; trackClickMode=&quot;increment&quot; autoHide={false}&gt;(&lt;div style={{ ...TEXT_STYLE, whiteSpace: &#39;nowrap&#39; }}&gt;
+      {createLoremIpsumText(1000)}
+    &lt;/div&gt;)&lt;/ScrollPane&gt;;</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="SplitPane">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> SplitPane</h2>
+      <div class="badges">
+        <label for="c-5-core-splitpane-props" class="badge ok as-toggle">13 prop types</label>
+        
+        <label for="c-5-core-splitpane-stories" class="badge ok as-toggle">4 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/SplitPane/SplitPane.stories.tsx">core-splitpane · ./src/components/SplitPane/SplitPane.stories.tsx</div>
+    
+    <div class="hint">Resizable layout controlling two panes separated by a draggable divider.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-5-core-splitpane-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-5-core-splitpane-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">13 prop types</span>
+            </div>
+            <pre><code>Component: src\components\SplitPane\SplitPane.tsx::SplitPane</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * ARIA and accessibility attributes forwarded to the root element.
+ * @remarks Accepts any valid ARIA attribute (role, aria-*, tabIndex, etc.).
+ * This lets consumers compose accessible patterns (e.g. tab lists)
+ * without the component needing to know about them.
+ * @example ```tsx
+ * &lt;Tab a11y={{ role: &#39;tab&#39;, tabIndex: 0, &#39;aria-selected&#39;: isActive }} /&gt;
+ * ```
+ */
+a11y?: (AriaAttributes &amp; { role?: AriaRole; tabIndex?: number; }) | undefined = {}
+
+/**
+ * Additional CSS class names merged onto the root element.
+ */
+className?: string
+
+/**
+ * When `true`, disables the splitter: the layout still renders at
+ * `firstSize`, but dragging and arrow-key resizing are ignored.
+ */
+disabled?: boolean = false
+
+/**
+ * Extra class name merged onto the first sub-pane&#39;s wrapper element.
+ */
+firstClassName?: string
+
+/**
+ * Current size of the first sub-pane as a percentage (`0`–`100`) of the
+ * container along its main axis.
+ * @remarks The component is fully controlled: it renders whatever value it is
+ * given. Clamping against {@link SplitPaneProps.minSize } and
+ * {@link SplitPaneProps.maxSize } is applied to the values emitted via
+ * {@link SplitPaneProps.onResize }, so well-behaved callers never see
+ * out-of-range values.
+ */
+firstSize: number
+
+/**
+ * Content rendered in the first (left / top) sub-pane.
+ */
+firstSubPane: ReactNode
+
+/**
+ * Maximum size of the first sub-pane as a percentage. Also caps the
+ * minimum size of the second sub-pane.
+ */
+maxSize?: number = 90
+
+/**
+ * Minimum size of the first sub-pane as a percentage. Also caps the
+ * maximum size of the second sub-pane.
+ */
+minSize?: number = 10
+
+/**
+ * Called with the new size (in percent) whenever the user drags the
+ * splitter or presses an arrow key on the focused splitter.
+ * @remarks The emitted value is already clamped to
+ * `[minSize, maxSize]`. Omit this prop to render a fixed (non-resizable)
+ * layout at `firstSize`.
+ */
+onResize?: ((firstSize: number) =&gt; void)
+
+/**
+ * Layout axis.
+ * @remarks - `&#39;horizontal&#39;` — sub-panes laid out side-by-side with a vertical
+ *   divider (`firstSize` controls the width of `firstSubPane`).
+ * - `&#39;vertical&#39;` — sub-panes stacked with a horizontal divider
+ *   (`firstSize` controls the height of `firstSubPane`).
+ */
+orientation?: Orientation = horizontal
+
+/**
+ * Extra class name merged onto the second sub-pane&#39;s wrapper element.
+ */
+secondClassName?: string
+
+/**
+ * Content rendered in the second (right / bottom) sub-pane.
+ */
+secondSubPane: ReactNode
+
+/**
+ * Extra class name merged onto the splitter element.
+ */
+splitterClassName?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { SplitPane } from "@pane-craft/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Horizontal</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A horizontal split with an editor-style sidebar (30%) and main panel. The size is owned by the story and passed as a controlled value.</div>
+              <pre><code>const Horizontal = (args: React.ComponentProps&lt;typeof SplitPane&gt;) =&gt; {
+  const [firstSize, setFirstSize] = useState(args.firstSize);
+  return FRAME(
+    &lt;SplitPane {...args} firstSize={firstSize} onResize={setFirstSize} /&gt;,
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Vertical</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A vertical split showing the main content on top and a console on the bottom.</div>
+              <pre><code>const Vertical = (args: React.ComponentProps&lt;typeof SplitPane&gt;) =&gt; {
+  const [firstSize, setFirstSize] = useState(args.firstSize);
+  return FRAME(
+    &lt;SplitPane {...args} firstSize={firstSize} onResize={setFirstSize} /&gt;,
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A nested split: an outer horizontal split where the right pane is itself a vertical split. Demonstrates that `SplitPane` composes cleanly without any state manager.</div>
+              <pre><code>const Nested = (args: React.ComponentProps&lt;typeof SplitPane&gt;) =&gt; {
+  const [outer, setOuter] = useState(25);
+  const [inner, setInner] = useState(70);
+  return FRAME(
+    &lt;SplitPane
+      {...args}
+      firstSize={outer}
+      onResize={setOuter}
+      firstSubPane={pane(&#39;Sidebar&#39;, &#39;#252526&#39;)}
+      secondSubPane={
+        &lt;SplitPane
+          orientation=&quot;vertical&quot;
+          firstSize={inner}
+          onResize={setInner}
+          firstSubPane={pane(&#39;Editor&#39;, &#39;#1e1e1e&#39;)}
+          secondSubPane={pane(&#39;Terminal&#39;, &#39;#252526&#39;)}
+        /&gt;
+      }
+    /&gt;,
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A read-only, fixed layout: the splitter is disabled so the 40/60 layout can&#39;t be resized. Still announces its state via `aria-disabled`.</div>
+              <pre><code>const Disabled = (args: React.ComponentProps&lt;typeof SplitPane&gt;) =&gt;
+  FRAME(&lt;SplitPane {...args} /&gt;);</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="StaticTabPane">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> StaticTabPane</h2>
+      <div class="badges">
+        <label for="c-6-composite-statictabpane-props" class="badge ok as-toggle">14 prop types</label>
+        
+        <label for="c-6-composite-statictabpane-stories" class="badge ok as-toggle">7 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/StaticTabPane/StaticTabPane.stories.tsx">composite-statictabpane · ./src/components/StaticTabPane/StaticTabPane.stories.tsx</div>
+    
+    <div class="hint">The batteries-included tab-and-content pane.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-6-composite-statictabpane-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-6-composite-statictabpane-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">14 prop types</span>
+            </div>
+            <pre><code>Component: src\components\StaticTabPane\StaticTabPane.tsx::StaticTabPane</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * ARIA and accessibility attributes forwarded to the root element.
+ * @remarks Accepts any valid ARIA attribute (role, aria-*, tabIndex, etc.).
+ * This lets consumers compose accessible patterns (e.g. tab lists)
+ * without the component needing to know about them.
+ * @example ```tsx
+ * &lt;Tab a11y={{ role: &#39;tab&#39;, tabIndex: 0, &#39;aria-selected&#39;: isActive }} /&gt;
+ * ```
+ */
+a11y?: (AriaAttributes &amp; { role?: AriaRole; tabIndex?: number; }) | undefined = {}
+
+/**
+ * Overlay nodes rendered inside the content area, alongside the active tab&#39;s
+ * content.
+ * @remarks The content area is a `position: relative` containing block sized to fit
+ * the space below the tab bar. Pass absolutely-positioned overlays — most
+ * commonly a `DropZone` — and they will cover only the content region (not
+ * the tab bar), and stay fixed when the tab content scrolls.
+ */
+children?: ReactNode
+
+/**
+ * Additional CSS class names merged onto the root element.
+ */
+className?: string
+
+/**
+ * Extra class name merged onto the content region.
+ */
+contentClassName?: string
+
+/**
+ * Shared drag state manager.
+ * @remarks Pass the same instance to every `StaticTabPane` that should participate in
+ * the same drag session (typically all tab panes in a pane tree). When
+ * omitted, an internal manager is created — drag-and-drop will work within
+ * this component but tabs cannot be dragged into or out of other tab panes.
+ */
+dragAndDropManager?: DragStateManager
+
+/**
+ * Rendered inside the content region when no tab is active (empty pane).
+ */
+emptyContent?: ReactNode = null
+
+/**
+ * Whether the tab header should scroll horizontally when tabs overflow.
+ * @remarks Forwarded to the internal `TabList`. When `true`, the tab row is
+ * horizontally scrollable with an auto-hide scrollbar; when `false` the tabs
+ * render in a plain flex row that overflows the container.
+ */
+isScrollable?: boolean = true
+
+/**
+ * Called after a tab is activated via click or keyboard. Fires only on
+ * actual state change.
+ */
+onTabClick?: ((tab: TabItem) =&gt; void)
+
+/**
+ * Called after a tab is removed via the close button. Receives the tab as
+ * it existed before removal.
+ */
+onTabClose?: ((tab: TabItem) =&gt; void)
+
+/**
+ * Called when a dragged tab is dropped on top of another tab in this pane.
+ */
+onTabDrop?: ((data: TabDropPayload) =&gt; void)
+
+/**
+ * Called when a dragged tab is dropped on the empty space of this pane&#39;s
+ * tab header.
+ */
+onTabListDrop?: ((data: TabListDropPayload) =&gt; void)
+
+/**
+ * Identifier used by the drag system to distinguish this tab pane from
+ * other tab panes in the same drag session.
+ * @remarks Cross-pane drag-and-drop requires every participating `StaticTabPane` to use
+ * the same {@link StaticTabPaneProps.dragAndDropManager } and to manage each
+ * pane have a unique `paneId`.
+ */
+paneId?: number = 0
+
+/**
+ * Extra class name merged onto the internal `TabList` root element.
+ */
+tabListClassName?: string
+
+/**
+ * Tab state manager that owns the tab collection.
+ * @remarks Pass one in when the tab data is owned outside the component. When
+ * omitted, an empty internal manager is created and lives for the
+ * component&#39;s lifetime. The same manager is forwarded to the internal
+ * `TabList`, so header and content always stay in sync.
+ */
+tabManager?: TabStateManager</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { DropZone, StaticTabPane } from "@pane-craft/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The default tab pane with four tabs. The active tab&#39;s `content` is rendered in the body region below the header. Dragging a tab onto another tab reorders them via the supplied `onTabDrop` handler.</div>
+              <pre><code>const Default = () =&gt; {
+    const tabManager = useMemo(() =&gt; createTabManager(TABS, 1), []);
+
+    return (
+        &lt;StaticTabPane
+            tabManager={tabManager}
+            onTabClick={(t) =&gt; {
+              console.log(&#39;click&#39;, t.id);
+            }}
+            onTabClose={(t) =&gt; {
+              console.log(&#39;close&#39;, t.id);
+            }}
+            onTabDrop={({ tab, targetTab, side }) =&gt; {
+              reorderTabListWithinPane(tabManager, tab.id, targetTab.id, side);
+            }} /&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Overflowing Header</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A tab pane whose header has more tabs than fit in the container. The header scrolls horizontally while the content region fills the remaining space.</div>
+              <pre><code>const OverflowingHeader = () =&gt; {
+    const tabManager = useMemo(() =&gt; createTabManager(MANY_TABS, 5), []);
+
+    return (
+        &lt;StaticTabPane
+            tabManager={tabManager}
+            onTabDrop={({ tab, targetTab, side }) =&gt; {
+              reorderTabListWithinPane(tabManager, tab.id, targetTab.id, side);
+            }} /&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Empty</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An empty tab pane — no tabs in the tabManager. The content region shows the supplied `emptyContent`.</div>
+              <pre><code>const Empty = () =&gt; {
+    const tabManager = useMemo(() =&gt; new TabStateManager(), []);
+
+    return (
+        &lt;StaticTabPane
+            tabManager={tabManager}
+            emptyContent={
+              &lt;div
+                style={{
+                  color: &#39;#b1b1b1&#39;,
+                  fontStyle: &#39;italic&#39;,
+                  padding: &#39;1rem&#39;,
+                }}
+              &gt;
+                No files are open.
+              &lt;/div&gt;
+            } /&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Pinned Single</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A single non-closeable tab — useful for &quot;pinned&quot; or required documents.</div>
+              <pre><code>const PinnedSingle = () =&gt; {
+    const tabManager = useMemo(
+      () =&gt;
+        createTabManager(
+          [
+            {
+              id: 1,
+              label: &#39;Pinned.md&#39;,
+              isCloseable: false,
+              content: createTabContent(
+                &#39;Pinned.md&#39;,
+                &#39;# This tab cannot be closed.&#39;,
+              ),
+            },
+          ],
+          1,
+        ),
+      [],
+    );
+    return &lt;StaticTabPane tabManager={tabManager} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Cross Pane Drag And Drop</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Two `StaticTabPane`s sharing a single `DragStateManager`. Tabs can be dragged between panes; same-pane drops reorder, cross-pane drops move. Whichever pane currently owns the active tab renders its content in the body region.</div>
+              <pre><code>const CrossPaneDragAndDrop = () =&gt; {
+  const dragManager = useMemo(() =&gt; new DragStateManager(), []);
+  const left = useMemo(
+    () =&gt; createTabManager(createTabItemList(3, &#39;Left Tab&#39;, 11), 11),
+    [],
+  );
+  const right = useMemo(
+    () =&gt; createTabManager(createTabItemList(2, &#39;Right Tab&#39;, 21), 21),
+    [],
+  );
+
+  const tabManagerByPane: Record&lt;number, TabStateManager&gt; = {
+    0: left,
+    1: right,
+  };
+
+  const moveTab = (
+    from: number,
+    to: number,
+    tab: TabItem,
+    atIndex?: number,
+  ) =&gt; {
+    tabManagerByPane[from].removeTab(tab.id);
+    tabManagerByPane[to].addTab(tab, atIndex);
+  };
+
+  return (
+    &lt;div style={{ display: &#39;flex&#39;, gap: 16, width: 840, height: 320 }}&gt;
+      {[
+        { paneId: 0 as const, tabManager: left, label: &#39;Pane 0&#39; },
+        { paneId: 1 as const, tabManager: right, label: &#39;Pane 1&#39; },
+      ].map(({ paneId, tabManager, label }) =&gt; (
+        &lt;div
+          key={paneId}
+          style={{
+            flex: 1,
+            display: &#39;flex&#39;,
+            flexDirection: &#39;column&#39;,
+            background: &#39;#1e1e1e&#39;,
+            border: &#39;1px solid #3c3c3c&#39;,
+            padding: 4,
+            minHeight: 0,
+          }}
+        &gt;
+          &lt;div
+            style={{
+              color: &#39;#888&#39;,
+              fontSize: 11,
+              padding: &#39;0 4px 4px&#39;,
+            }}
+          &gt;
+            {label}
+          &lt;/div&gt;
+          &lt;StaticTabPane
+            paneId={paneId}
+            tabManager={tabManager}
+            dragAndDropManager={dragManager}
+            onTabDrop={({
+              tab,
+              sourcePaneId,
+              targetPaneId,
+              targetTab,
+              side,
+            }) =&gt; {
+              if (sourcePaneId === targetPaneId) {
+                const order = tabManagerByPane[targetPaneId]
+                  .getState()
+                  .order.slice();
+
+                const fromIdx = order.indexOf(tab.id);
+                if (fromIdx &gt;= 0) {
+                  order.splice(fromIdx, 1);
+                }
+
+                const toIdx =
+                  order.indexOf(targetTab.id) + (side === &#39;right&#39; ? 1 : 0);
+                order.splice(toIdx, 0, tab.id);
+
+                tabManagerByPane[targetPaneId].reorder(order);
+              } else {
+                const targetIdx =
+                  tabManagerByPane[targetPaneId]
+                    .getState()
+                    .order.indexOf(targetTab.id) + (side === &#39;right&#39; ? 1 : 0);
+                moveTab(sourcePaneId, targetPaneId, tab, targetIdx);
+              }
+            }}
+            onTabListDrop={({ tab, sourcePaneId, targetPaneId }) =&gt; {
+              if (sourcePaneId === targetPaneId) {
+                return;
+              }
+              moveTab(sourcePaneId, targetPaneId, tab);
+            }}
+          /&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Drop Zone</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A `StaticTabPane` with a `DropZone` passed as `children`. The drop zones cover only the content region — drag a tab over the tab bar and the overlay does not intercept; release over a zone in the body to log the chosen position. The story is intentionally passive (no move/split logic wired up) so the `DropZone` contract is visible in isolation.</div>
+              <pre><code>const WithDropZone = () =&gt; {
+  const dragManager = useMemo(() =&gt; new DragStateManager(), []);
+  const tabManager = useMemo(() =&gt; createTabManager(TABS, 1), []);
+
+  return (
+    &lt;div style={getBodyCss(560, 320)}&gt;
+      &lt;StaticTabPane tabManager={tabManager} dragAndDropManager={dragManager}&gt;
+        &lt;DropZone
+          dragAndDropManager={dragManager}
+          onDrop={({ tab, pos }) =&gt; {
+            console.log(&#39;dropped&#39;, tab.label, &#39;on&#39;, pos);
+          }}
+        /&gt;
+      &lt;/StaticTabPane&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Center Only Drop Zone</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A `StaticTabPane` with a `center`-only `DropZone` — useful for panes that accept cross-pane moves but should not be split. Edge zones are not rendered, so a drag near the perimeter of the content area falls through.</div>
+              <pre><code>const WithCenterOnlyDropZone = () =&gt; {
+  const dragManager = useMemo(() =&gt; new DragStateManager(), []);
+  const tabManager = useMemo(() =&gt; createTabManager(TABS.slice(0, 1), 1), []);
+
+  return (
+    &lt;div style={getBodyCss(480, 280)}&gt;
+      &lt;StaticTabPane tabManager={tabManager} dragAndDropManager={dragManager}&gt;
+        &lt;DropZone
+          dropZonePosList={[&#39;center&#39;]}
+          dragAndDropManager={dragManager}
+          onDrop={({ pos }) =&gt; {
+            console.log(&#39;dropped on (center-only)&#39;, pos);
+          }}
+        /&gt;
+      &lt;/StaticTabPane&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Tab">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Tab</h2>
+      <div class="badges">
+        <label for="c-7-core-tab-props" class="badge ok as-toggle">11 prop types</label>
+        
+        <label for="c-7-core-tab-stories" class="badge ok as-toggle">9 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/Tab/Tab.stories.tsx">core-tab · ./src/components/Tab/Tab.stories.tsx</div>
+    
+    <div class="hint">A simple tab component with easy default features.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-7-core-tab-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-7-core-tab-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">11 prop types</span>
+            </div>
+            <pre><code>Component: src\components\Tab\Tab.tsx::Tab</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * ARIA and accessibility attributes forwarded to the root element.
+ * @remarks Accepts any valid ARIA attribute (role, aria-*, tabIndex, etc.).
+ * This lets consumers compose accessible patterns (e.g. tab lists)
+ * without the component needing to know about them.
+ * @example ```tsx
+ * &lt;Tab a11y={{ role: &#39;tab&#39;, tabIndex: 0, &#39;aria-selected&#39;: isActive }} /&gt;
+ * ```
+ */
+a11y?: (AriaAttributes &amp; { role?: AriaRole; tabIndex?: number; }) | undefined = {}
+
+/**
+ * Additional CSS class names merged onto the root element.
+ */
+className?: string
+
+/**
+ * Renderable content for the tab&#39;s body.
+ * @remarks {@link StaticTabPane } displays the `content` of the currently active tab
+ * below the {@link TabList }. Omit this field when a tab only participates
+ * in the header (e.g. when you render the body yourself outside the
+ * `StaticTabPane`).
+ * @example ```tsx
+ * const tab: TabItem = {
+ *   id: 0,
+ *   label: &#39;Sample Component&#39;,
+ *   content: &lt;SampleComponent {...componentProps} /&gt;,
+ * };
+ * ```
+ */
+content?: ReactNode
+
+/**
+ * Whether or not this tab is a drop target when another tab is being
+ * dragged, and which side of this tab is currently being hovered over.
+ * @remarks `null` indicates the tab is not the target of a dragged tab.
+ * A coloured drop-indicator line is rendered on the indicated side.
+ */
+dropTargetSide?: TabDropTargetSide | null = null
+
+/**
+ * Unique identifier for this tab.
+ * @remarks Must be unique relative to other tabs and does not change for the lifetime
+ * of the tab. Used as the `data-tab-id` attribute and passed back to
+ * `onClose`.
+ */
+id: number
+
+/**
+ * Whether this tab is the currently selected tab.
+ */
+isActive?: boolean = false
+
+/**
+ * Sets whether the tab can be closed or not.
+ * @remarks When not closeable, the close button is not rendered at all, producing a
+ * &quot;pinned&quot; tab that cannot be closed by the user.
+ */
+isCloseable?: boolean = true
+
+/**
+ * Whether this tab is currently being dragged by the user.
+ * @remarks When `true`, the tab is rendered dimmed and slightly rotated to give
+ * a visual affordance that it is &quot;in flight&quot;.
+ */
+isDragged?: boolean = false
+
+/**
+ * The text displayed on the tab.
+ * @remarks Long labels are truncated with an ellipsis via CSS `text-overflow`. The
+ * label is exposed as a `title` tooltip.
+ * @example ```tsx
+ * &lt;Tab id={1} label=&quot;index.ts&quot; ... /&gt;
+ * ```
+ */
+label: string
+
+/**
+ * Callback fired when the tab is activated — by mouse click, or by
+ * pressing `Enter`/`Space` while the tab is focused.
+ * @remarks Tab is stateless: invoking `onClick` does not flip `isActive` on its
+ * own. The parent is expected to update its active tab id and pass the
+ * new `isActive` value back in.
+ * 
+ * When the tab is rendered through `TabList`, this fires *in addition*
+ * to `TabListProps.onTabClick` — selection runs first, then this
+ * callback, so the consumer observes the post-activation state. The two
+ * differ in cadence: `TabListProps.onTabClick` only fires when the active
+ * tab actually changes, whereas `onClick` fires on every click including
+ * re-clicks of the already-active tab.
+ * 
+ * Clicks on the close button do not invoke `onClick` — the close button
+ * stops propagation internally.
+ * @example ```tsx
+ * &lt;Tab id={3} onClick={() =&gt; setActiveId(3)} ... /&gt;
+ * ```
+ */
+onClick?: (() =&gt; void)
+
+/**
+ * Callback when the user clicks the close button.
+ * @remarks When omitted, the close button is not rendered at all, producing a
+ * &quot;pinned&quot; tab that cannot be closed by the user.
+ * @param id - The `id` of the tab being closed.
+ * @example ```tsx
+ * &lt;Tab id={3} onClose={(id) =&gt; dispatch({ type: &#39;CLOSE_TAB&#39;, id })} ... /&gt;
+ * ```
+ */
+onClose?: ((id: number) =&gt; void)</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Tab } from "@pane-craft/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The default resting state — inactive, not being dragged, no close callback.</div>
+              <pre><code>const Default = () =&gt; &lt;Tab id={0} label=&quot;Default Tab&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Active</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The currently selected tab. Rendered with a colored top-border accent and a lighter background.</div>
+              <pre><code>const Active = () =&gt; &lt;Tab id={1} label=&quot;Active Tab&quot; isActive /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Close Callback</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An inactive tab with a close button and callback. The close button carries an `aria-label` of `&quot;Close ${label}&quot;` so screen readers announce the target.</div>
+              <pre><code>const WithCloseCallback = () =&gt; &lt;Tab
+    id={10}
+    label=&quot;Close Callback&quot;
+    onClose={(id) =&gt; {
+      console.log(&#39;close&#39;, id);
+    }} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Without Close</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A &quot;pinned&quot; tab — `isCloseable={false}` removes the close button entirely so the tab cannot be dismissed by the user.</div>
+              <pre><code>const WithoutClose = () =&gt; &lt;Tab id={11} label=&quot;Without Close&quot; isCloseable={false} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Dragging</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The tab the user is currently dragging. Rendered dimmed and slightly larger. Your controller should set `isDragged={true}` on the source tab while a drag is in progress.</div>
+              <pre><code>const Dragging = () =&gt; &lt;Tab id={20} label=&quot;Dragging&quot; isDragged /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Drop Target Left</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A drop target with the indicator on the **left** edge. A tab becomes a drop target when the user is dragging a different tab on top of this tab. Use when the dragged tab is hovering over the left half of this tab, indicating it will be inserted to the left.</div>
+              <pre><code>const DropTargetLeft = () =&gt; &lt;Tab
+    id={21}
+    label=&quot;Dropping Left&quot;
+    isActive={false}
+    isDragged={false}
+    dropTargetSide=&quot;left&quot;
+    isCloseable={false} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Drop Target Right</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A drop target with the indicator on the **right** edge. A tab becomes a drop target when the user is dragging a different tab on top of this tab. Use when the dragged tab is hovering over the right half of this tab, indicating it will be inserted to the right.</div>
+              <pre><code>const DropTargetRight = () =&gt; &lt;Tab
+    id={22}
+    label=&quot;Dropping Right&quot;
+    isActive={false}
+    isDragged={false}
+    dropTargetSide=&quot;right&quot;
+    isCloseable={false} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Accessibility Override</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Demonstrates the `a11y` prop, which passes ARIA properties to the root `div` element of the tab. Consumers can override default values or forward additional properties. The default values `Tab` uses are: - `role=&quot;tab&quot;` — identifies the element as a tab control - `aria-selected` — based on `isActive`, tells assistive technology knows which tab is current - `tabIndex` — `0` for the active tab, `-1` for all others See APG Tabs Pattern (https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) for more information.</div>
+              <pre><code>const AccessibilityOverride = () =&gt; &lt;Tab
+    id={30}
+    label=&quot;A11y Override&quot;
+    a11y={{
+      tabIndex: 1,
+      &#39;aria-label&#39;: &#39;test-label&#39;,
+    }} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Long Label</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A title long enough to overflow the tab&#39;s `max-width`, appending an ellipsis via CSS `text-overflow`.</div>
+              <pre><code>const LongLabel = () =&gt; &lt;Tab id={40} label=&quot;A longer label that overflows&quot; /&gt;;</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="TabList">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> TabList</h2>
+      <div class="badges">
+        <label for="c-8-composite-tablist-props" class="badge ok as-toggle">10 prop types</label>
+        
+        <label for="c-8-composite-tablist-stories" class="badge ok as-toggle">6 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/components/TabList/TabList.stories.tsx">composite-tablist · ./src/components/TabList/TabList.stories.tsx</div>
+    
+    <div class="hint">The batteries-included tab bar.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-8-composite-tablist-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-8-composite-tablist-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">10 prop types</span>
+            </div>
+            <pre><code>Component: src\components\TabList\TabList.tsx::TabList</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * ARIA and accessibility attributes forwarded to the root element.
+ * @remarks Accepts any valid ARIA attribute (role, aria-*, tabIndex, etc.).
+ * This lets consumers compose accessible patterns (e.g. tab lists)
+ * without the component needing to know about them.
+ * @example ```tsx
+ * &lt;Tab a11y={{ role: &#39;tab&#39;, tabIndex: 0, &#39;aria-selected&#39;: isActive }} /&gt;
+ * ```
+ */
+a11y?: (AriaAttributes &amp; { role?: AriaRole; tabIndex?: number; }) | undefined = {}
+
+/**
+ * Additional CSS class names merged onto the root element.
+ */
+className?: string
+
+/**
+ * Shared drag state manager.
+ * @remarks Pass the same instance to every `TabList` that should participate in the
+ * same drag session (typically all tab lists in a pane tree). When omitted,
+ * an internal manager is created — drag-and-drop will work within this
+ * component but tabs cannot be dragged into or out of other tab lists.
+ */
+dragAndDropManager?: DragStateManager
+
+/**
+ * Whether to wrap the tab row in a horizontal `ScrollPane`.
+ * @remarks When `true` the tab row is horizontally scrollable with a custom
+ * auto-hide scrollbar; long tab lists scroll instead of wrapping. When
+ * `false` the tabs render in a plain flex row that overflows the container.
+ */
+isScrollable?: boolean = true
+
+/**
+ * Called after a tab is activated via click or keyboard. Fires only on
+ * actual state change.
+ */
+onTabClick?: ((tab: TabItem) =&gt; void)
+
+/**
+ * Called after a tab is removed via the close button. Receives the tab as
+ * it existed before removal.
+ */
+onTabClose?: ((tab: TabItem) =&gt; void)
+
+/**
+ * Called when a dragged tab is dropped on top of another tab in this list.
+ * @remarks The component does not perform the reorder/move itself — wire this to
+ * the manager(s) and decide what the drop should do. Typical
+ * implementations call `manager.reorder(...)` for same-pane drops and
+ * `manager.removeTab(...)` + `targetManager.addTab(..., index)` for
+ * cross-pane drops.
+ */
+onTabDrop?: ((data: TabDropPayload) =&gt; void)
+
+/**
+ * Called when a dragged tab is dropped on the empty space of this list.
+ * Conventionally treated as &quot;append to the end&quot;.
+ */
+onTabListDrop?: ((data: TabListDropPayload) =&gt; void)
+
+/**
+ * Identifier used by the drag system to distinguish this tab list from
+ * other tab lists in the same drag session.
+ * @remarks Cross-pane drag-and-drop requires every participating `TabList` to use
+ * the same {@link TabListProps.dragAndDropManager } **and** to have a unique
+ * `paneId`. For single-list usage the default of `0` is fine.
+ */
+paneId?: number = 0
+
+/**
+ * Tab state manager that owns the tab collection.
+ * @remarks Pass one in when the tab data is owned outside the component (e.g. when
+ * several views need to share the same tabs, or when state needs to be
+ * seeded before mount). When omitted, an empty internal manager is created
+ * and lives for the component&#39;s lifetime.
+ */
+tabManager?: TabStateManager</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { TabList } from "@pane-craft/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The default tab bar. The first tab is active and every tab is closeable and draggable.</div>
+              <pre><code>const Default = () =&gt; {
+    const tabManager = useMemo(
+      () =&gt; createTabManager(createTabItemList(3), 1),
+      [],
+    );
+
+    return (
+        &lt;TabList
+            tabManager={tabManager}
+            onTabClick={(t) =&gt; {
+              console.log(&#39;click&#39;, t.id);
+            }}
+            onTabClose={(t) =&gt; {
+              console.log(&#39;close&#39;, t.id);
+            }}
+            onTabDrop={({ tab, targetTab, side }) =&gt; {
+              reorderTabListWithinPane(tabManager, tab.id, targetTab.id, side);
+            }}
+            onTabListDrop={({ tab }) =&gt; {
+              moveToEndWithinPane(tabManager, tab.id);
+            }} /&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Overflowing</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A tab list with more tabs than the container can show. Scroll horizontally inside the tab bar.</div>
+              <pre><code>const Overflowing = () =&gt; {
+    const tabManager = useMemo(
+      () =&gt; createTabManager(createTabItemList(10), 5),
+      [],
+    );
+
+    return (
+        &lt;TabList
+            tabManager={tabManager}
+            onTabClick={(t) =&gt; {
+              console.log(&#39;click&#39;, t.id);
+            }}
+            onTabDrop={({ tab, targetTab, side }) =&gt; {
+              reorderTabListWithinPane(tabManager, tab.id, targetTab.id, side);
+            }}
+            onTabListDrop={({ tab }) =&gt; {
+              moveToEndWithinPane(tabManager, tab.id);
+            }} /&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Not Scrollable</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Same data as `Overflowing` but with `isScrollable={false}`. The tabs spill past the container edge instead of becoming a horizontal scroller. Not a likely way a consumer would use the TabList, but included for full specificity and awareness.</div>
+              <pre><code>const NotScrollable = () =&gt; {
+    const tabManager = useMemo(
+      () =&gt; createTabManager(createTabItemList(6), 1),
+      [],
+    );
+    return &lt;TabList isScrollable={false} tabManager={tabManager} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Empty</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An empty tab bar — no tabs in the tabManager. Renders an empty container with keyboard navigation that does nothing until tabs are added.</div>
+              <pre><code>const Empty = () =&gt; {
+    const tabManager = useMemo(() =&gt; new TabStateManager(), []);
+    return &lt;TabList tabManager={tabManager} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Pinned Single</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A single non-closeable tab — useful for &quot;pinned&quot; or required documents.</div>
+              <pre><code>const PinnedSingle = () =&gt; {
+    const tabManager = useMemo(
+      () =&gt;
+        createTabManager([{ id: 1, label: &#39;Pinned.md&#39;, isCloseable: false }], 1),
+      [],
+    );
+    return &lt;TabList tabManager={tabManager} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Cross Pane Drag And Drop</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Two `TabList` components sharing a single `DragStateManager`. Tabs can be dragged between panes; same-pane drops reorder, cross-pane drops move. This is intended to demonstrate the minimal handlers for cross-pane drag and drop functionality. Consumers are encouraged to wire their own `onTabDrop`/`onTabListDrop` for real applications.</div>
+              <pre><code>const CrossPaneDragAndDrop = () =&gt; {
+  const dragManager = useMemo(() =&gt; new DragStateManager(), []);
+  const left = useMemo(
+    () =&gt; createTabManager(createTabItemList(3, &#39;Left&#39;), 11),
+    [],
+  );
+  const right = useMemo(
+    () =&gt; createTabManager(createTabItemList(2, &#39;Right&#39;), 21),
+    [],
+  );
+
+  const tabManagerByPane: Record&lt;number, TabStateManager&gt; = {
+    0: left,
+    1: right,
+  };
+
+  const moveTab = (
+    from: number,
+    to: number,
+    tab: TabItem,
+    atIndex?: number,
+  ) =&gt; {
+    tabManagerByPane[from].removeTab(tab.id);
+    tabManagerByPane[to].addTab(tab, atIndex);
+  };
+
+  return (
+    &lt;div style={{ display: &#39;flex&#39;, gap: 16, width: 640 }}&gt;
+      {[
+        { paneId: 0, tabManager: left, label: &#39;Pane 0&#39; },
+        { paneId: 1, tabManager: right, label: &#39;Pane 1&#39; },
+      ].map(({ paneId, tabManager, label }) =&gt; (
+        &lt;div
+          key={paneId}
+          style={{
+            flex: 1,
+            background: &#39;#1e1e1e&#39;,
+            border: &#39;1px solid #3c3c3c&#39;,
+            padding: 4,
+          }}
+        &gt;
+          &lt;div
+            style={{
+              color: &#39;#888&#39;,
+              fontSize: 11,
+              padding: &#39;0 4px 4px&#39;,
+            }}
+          &gt;
+            {label}
+          &lt;/div&gt;
+          &lt;TabList
+            paneId={paneId}
+            tabManager={tabManager}
+            dragAndDropManager={dragManager}
+            onTabDrop={({
+              tab,
+              sourcePaneId,
+              targetPaneId,
+              targetTab,
+              side,
+            }) =&gt; {
+              if (sourcePaneId === targetPaneId) {
+                const order = tabManagerByPane[targetPaneId]
+                  .getState()
+                  .order.slice();
+                const fromIdx = order.indexOf(tab.id);
+                if (fromIdx &gt;= 0) order.splice(fromIdx, 1);
+                const toIdx =
+                  order.indexOf(targetTab.id) + (side === &#39;right&#39; ? 1 : 0);
+                order.splice(toIdx, 0, tab.id);
+                tabManagerByPane[targetPaneId].reorder(order);
+              } else {
+                const targetIdx =
+                  tabManagerByPane[targetPaneId]
+                    .getState()
+                    .order.indexOf(targetTab.id) + (side === &#39;right&#39; ? 1 : 0);
+                moveTab(sourcePaneId, targetPaneId, tab, targetIdx);
+              }
+            }}
+            onTabListDrop={({ tab, sourcePaneId, targetPaneId }) =&gt; {
+              if (sourcePaneId === targetPaneId) {
+                moveToEndWithinPane(tabManagerByPane[targetPaneId], tab.id);
+                return;
+              }
+              moveTab(sourcePaneId, targetPaneId, tab);
+            }}
+          /&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+    </div>
+    
+    
+    
+  </div>
+</main>
+</body>
+</html>  

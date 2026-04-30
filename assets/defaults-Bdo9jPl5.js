@@ -1,0 +1,1 @@
+import{n as e}from"./chunk-BneVvdWh.js";var t,n,r,i=e((()=>{t={orientation:`horizontal`,trackClickMode:`jump`,thumbSizeMin:20,autoHide:!0,wheelToScroll:!0},n={ariaValueMax:100,ariaValueMin:0,disabled:!1},r={disabled:!1,maxSize:90,minSize:10,orientation:`horizontal`}}));export{i,t as n,r,n as t};

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+
+*.log
+
+storybook-static
+
+coverage/
+e2e/screenshots/
+test-results/
+
+.vscode/
