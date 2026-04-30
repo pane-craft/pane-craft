@@ -1,7 +1,7 @@
 {
   "name": "@pane-craft/react",
   "version": "0.0.0",
-  "description": "",
+  "description": "A component library for creating editor-style functionality, including tabs, split panes, and drag and drop functionality.",
   "type": "module",
   "files": [
     "dist"
@@ -39,9 +39,29 @@
     "changeset": "changeset",
     "release": "changeset publish"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "react",
+    "typescript",
+    "tabs",
+    "split-pane",
+    "splitter",
+    "resizable",
+    "drag-and-drop",
+    "pane",
+    "editor",
+    "ide",
+    "layout",
+    "docking"
+  ],
+  "author": "Peter Justeson (https://github.com/JusticeSquad)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JusticeSquad/pane-craft.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JusticeSquad/pane-craft/issues"
+  },
   "publishConfig": {
     "access": "public"
   },
