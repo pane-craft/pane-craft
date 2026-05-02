@@ -16,7 +16,19 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./components/*": {
+      "import": {
+        "types": "./dist/components/*/index.d.ts",
+        "default": "./dist/components/*/index.js"
+      },
+      "require": {
+        "types": "./dist/components/*/index.d.cts",
+        "default": "./dist/components/*/index.cjs"
+      }
+    },
+    "./styles/*.css": "./dist/styles/*.css",
+    "./package.json": "./package.json"
   },
   "module": "./dist/index.js",
   "main": "./dist/index.cjs",
@@ -24,7 +36,7 @@
     "**/*.css"
   ],
   "scripts": {
-    "build": "vite build && node -e \"require('fs').copyFileSync('dist/index.d.ts','dist/index.d.cts')\"",
+    "build": "vite build && node scripts/finalize-dts.mjs && node scripts/finalize-css.mjs",
     "build:watch": "vite build --watch",
     "dev": "storybook dev -p 6006",
     "storybook": "storybook dev -p 6006",

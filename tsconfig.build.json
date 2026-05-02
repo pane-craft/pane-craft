@@ -7,7 +7,9 @@
     "node_modules",
     "dist",
     "**/*.test.tsx",
+    "**/*.test.ts",
     "**/*.stories.tsx",
+    "**/*.stories.ts",
     "src/test-setup.ts",
     "src/test-utils"
   ]

@@ -6,28 +6,31 @@ import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 import { libInjectCss } from 'vite-plugin-lib-inject-css';
 
-function getComponentEntries(dir: string) {
-  const dirs = readdirSync(dir, { withFileTypes: true }).filter((d) =>
+const root = __dirname;
+
+function getComponentBarrelEntries(componentsDir: string) {
+  const dirs = readdirSync(componentsDir, { withFileTypes: true }).filter((d) =>
     d.isDirectory(),
   );
 
   const missing = dirs.filter(
-    (d) => !existsSync(resolve(dir, d.name, 'index.ts')),
+    (d) => !existsSync(resolve(componentsDir, d.name, 'index.ts')),
   );
-
   if (missing.length > 0) {
     const names = missing
       .map((d) => `  - src/components/${d.name}/index.ts`)
       .join('\n');
     throw new Error(
       `The following components are missing an index.ts entry point:\n${names}\n\n` +
-        `Each component directory must have an index.ts that re-exports its public API.\n` +
-        `See src/components/Tab/index.ts for an example.`,
+        `Each component directory must have an index.ts that re-exports its public API.`,
     );
   }
 
   return Object.fromEntries(
-    dirs.map((d) => [d.name, resolve(dir, d.name, 'index.ts')]),
+    dirs.map((d) => [
+      `components/${d.name}/index`,
+      resolve(componentsDir, d.name, 'index.ts'),
+    ]),
   );
 }
 
@@ -38,7 +41,6 @@ export default defineConfig(({ mode }) => ({
     dts({
       tsconfigPath: './tsconfig.build.json',
       insertTypesEntry: true,
-      rollupTypes: true,
     }),
   ],
 
@@ -55,34 +57,23 @@ export default defineConfig(({ mode }) => ({
   build: {
     lib: {
       entry: {
-        index: resolve(__dirname, 'src/index.ts'),
-        ...getComponentEntries(resolve(__dirname, 'src/components')),
+        index: resolve(root, 'src/index.ts'),
+        ...getComponentBarrelEntries(resolve(root, 'src/components')),
       },
       formats: ['es', 'cjs'],
-      fileName: (format, entryName) => {
-        const ext = format === 'es' ? 'js' : 'cjs';
-        return entryName === 'index'
-          ? `index.${ext}`
-          : `components/${entryName}.${ext}`;
-      },
+      fileName: (format, entryName) =>
+        `${entryName}.${format === 'es' ? 'js' : 'cjs'}`,
     },
 
     rollupOptions: {
-      // Never bundle peer deps
       external: ['react', 'react-dom', 'react/jsx-runtime'],
       plugins: [preserveDirectives()],
       output: {
-        // Preserve module structure for better tree-shaking in consumer apps
         preserveModules: true,
         preserveModulesRoot: 'src',
-        // Don't minify ESM — preserves /*#__PURE__*/ annotations for tree-shaking
-        // CJS minification is handled by the consumer's bundler anyway
-        sourcemap: mode !== 'production',
       },
     },
 
-    // Don't clear the outDir between format builds
-    emptyOutDir: true,
-    sourcemap: mode !== 'production',
+    sourcemap: true,
   },
 }));
