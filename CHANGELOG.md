@@ -1,5 +1,11 @@
 # @pane-craft/react
 
+## 0.1.1
+
+### Patch Changes
+
+- WIP fixes for CSS build configuration.
+
 ## 0.1.0
 
 ### Minor Changes
