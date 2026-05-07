@@ -1,6 +1,6 @@
 {
   "name": "@pane-craft/react",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A component library for creating editor-style functionality, including tabs, split panes, and drag and drop functionality.",
   "type": "module",
   "files": [

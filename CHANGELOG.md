@@ -1,5 +1,11 @@
 # @pane-craft/react
 
+## 0.2.0
+
+### Minor Changes
+
+- Added custom tab support.
+
 ## 0.1.1
 
 ### Patch Changes
