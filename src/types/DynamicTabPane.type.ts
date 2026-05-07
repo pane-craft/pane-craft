@@ -5,6 +5,7 @@ import { type BaseComponentProps, type Orientation } from './Base.type';
 import { type DropZonePosition } from './DropZone.type';
 import { type LeafId, type SplitSide } from './PaneTreeStateManager.type';
 import { type TabId, type TabItem } from './Tab.type';
+import { type CustomTabProps } from './TabList.type';
 
 export { type LeafId, type SplitSide } from './PaneTreeStateManager.type';
 export { type TabId, type TabItem } from './Tab.type';
@@ -263,6 +264,15 @@ export type DynamicTabPaneProps = BaseComponentProps & {
    * @default '30%'
    */
   edgeSize?: string;
+
+  /**
+   * Optional custom tab component, allowing the consumer to provide their own
+   * tab instead of relying on the default implementation. Functionality
+   * relating to the {@link CustomTabProps} must be implemented by the
+   * consumer, but other functionality such as drag and drop is still
+   * implemented for the consumer by components upstream of the tab.
+   */
+  CustomTabComponent?: React.ComponentType<CustomTabProps>;
 
   /** Extra class name applied to each split container. */
   splitClassName?: string;

@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { DynamicTabPaneStateManager } from '../../state/DynamicTabPaneStateManager';
 import {
   createTabContent,
   createTabItemList,
-} from '../../test-utils/test-react.util';
-import { createLoremIpsumText } from '../../test-utils/test.util';
+  FRAME_DYNAMIC_PANE,
+} from '../../dev-utils/test-react.util';
+import { createLoremIpsumText } from '../../dev-utils/test.util';
+import { DynamicTabPaneStateManager } from '../../state/DynamicTabPaneStateManager';
 import {
   type LeafId,
   type SplitSide,
@@ -27,15 +28,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const FRAME_STYLE: React.CSSProperties = {
-  width: '100vw',
-  height: '100vh',
-  background: '#1e1e1e',
-  color: '#d4d4d4',
-  fontFamily: 'ui-monospace, monospace',
-  fontSize: 13,
-};
-
 const BasicStory = (): React.ReactElement => {
   const manager = useMemo(
     () =>
@@ -48,7 +40,7 @@ const BasicStory = (): React.ReactElement => {
   );
 
   return (
-    <div style={FRAME_STYLE}>
+    <div style={FRAME_DYNAMIC_PANE}>
       <DynamicTabPane manager={manager} />
     </div>
   );
@@ -93,7 +85,7 @@ const IdeLayoutStory = (): React.ReactElement => {
   }, []);
 
   return (
-    <div style={FRAME_STYLE}>
+    <div style={FRAME_DYNAMIC_PANE}>
       <DynamicTabPane manager={manager} />
     </div>
   );
@@ -173,7 +165,7 @@ const InteractivePlaygroundStory = (): React.ReactElement => {
   return (
     <div
       style={{
-        ...FRAME_STYLE,
+        ...FRAME_DYNAMIC_PANE,
         display: 'flex',
         flexDirection: 'column',
       }}

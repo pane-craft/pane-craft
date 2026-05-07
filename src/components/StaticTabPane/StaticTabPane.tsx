@@ -77,6 +77,7 @@ export const StaticTabPane: React.FC<StaticTabPaneProps> = ({
   onTabClose,
   onTabDrop,
   onTabListDrop,
+  CustomTabComponent,
   emptyContent = null,
   children,
   className = '',
@@ -115,6 +116,7 @@ export const StaticTabPane: React.FC<StaticTabPaneProps> = ({
         onTabClose={onTabClose}
         onTabDrop={onTabDrop}
         onTabListDrop={onTabListDrop}
+        CustomTabComponent={CustomTabComponent}
         className={tabListClassName}
       />
       <div

@@ -78,6 +78,7 @@ export const DynamicTabPaneLeaf: React.FC<DynamicTabPaneLeafProps> = ({
   emptyContent = null,
   dropZonePosList,
   edgeSize,
+  CustomTabComponent,
   className = '',
   tabListClassName,
   contentClassName,
@@ -109,6 +110,7 @@ export const DynamicTabPaneLeaf: React.FC<DynamicTabPaneLeafProps> = ({
         onTabClose={onTabClose}
         onTabDrop={onTabDrop}
         onTabListDrop={onTabListDrop}
+        CustomTabComponent={CustomTabComponent}
         emptyContent={emptyContent}
         tabListClassName={tabListClassName}
         contentClassName={contentClassName}

@@ -112,6 +112,7 @@ export const DynamicTabPane: React.FC<DynamicTabPaneProps> = ({
   disabled = false,
   dropZonePosList,
   edgeSize,
+  CustomTabComponent,
   className = '',
   splitClassName,
   leafClassName,
@@ -237,6 +238,7 @@ export const DynamicTabPane: React.FC<DynamicTabPaneProps> = ({
               emptyContent={emptyPaneContent}
               dropZonePosList={dropZonePosList}
               edgeSize={edgeSize}
+              CustomTabComponent={CustomTabComponent}
               tabListClassName={tabListClassName}
               contentClassName={contentClassName}
               dropZoneClassName={dropZoneClassName}

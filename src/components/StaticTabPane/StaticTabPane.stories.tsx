@@ -3,18 +3,18 @@ import { useMemo } from 'react';
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { DragStateManager } from '../../state/DragStateManager';
-import { TabStateManager } from '../../state/TabStateManager';
 import {
   createFrameDecorator,
   createTabContent,
   createTabItemList,
   getBodyCss,
-} from '../../test-utils/test-react.util';
+} from '../../dev-utils/test-react.util';
 import {
   createTabManager,
   reorderTabListWithinPane,
-} from '../../test-utils/test.util';
+} from '../../dev-utils/test.util';
+import { DragStateManager } from '../../state/DragStateManager';
+import { TabStateManager } from '../../state/TabStateManager';
 import { type TabItem } from '../../types/Tab.type';
 import { DropZone } from '../DropZone/DropZone';
 import { StaticTabPane } from './StaticTabPane';

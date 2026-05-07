@@ -77,6 +77,7 @@ export const TabList: React.FC<TabListProps> = ({
   onTabClose,
   onTabDrop,
   onTabListDrop,
+  CustomTabComponent,
   className = '',
   a11y = {},
 }) => {
@@ -115,6 +116,8 @@ export const TabList: React.FC<TabListProps> = ({
       tab.onClick?.();
     };
 
+    const TabComponent = CustomTabComponent ?? Tab;
+
     return (
       <div
         key={tab.id}
@@ -122,13 +125,14 @@ export const TabList: React.FC<TabListProps> = ({
         data-testid={`tab-wrapper-${tab.id}`}
         {...dragHandlers}
       >
-        <Tab
+        <TabComponent
           {...tab}
           isActive={selection.isActive}
           isDragged={isDraggedSource}
           dropTargetSide={dropTargetSide}
           onClick={handleTabClick}
           onClose={selection.onClose}
+          manager={CustomTabComponent ? tabManager : undefined}
         />
       </div>
     );

@@ -1,3 +1,4 @@
+import { type TabProps } from '../components/Tab';
 import { type DragStateManager } from '../state/DragStateManager';
 import { type TabStateManager } from '../state/TabStateManager';
 import { type BaseComponentProps } from './Base.type';
@@ -14,6 +15,24 @@ export {
 } from './useTabDragAndDrop.type';
 export { type TabItem } from './Tab.type';
 export { type PaneId } from './Pane.type';
+
+/**
+ * Props for custom tabs that the user can provide to {@link TabList} or any
+ * higher-level tab pane components.
+ *
+ * @remarks
+ * These props constrain a custom tab to use the same props as a normal tab to
+ * ensure the same capabilities (e.g. detecting if the tab is active). A
+ * {@link TabStateManager} optionally can be passed to the custom tab for
+ * advanced functionality.
+ */
+export type CustomTabProps = TabProps & {
+  /**
+   * Tab state manager that owns the tab collection. Optional prop for adding
+   * advanced functionality to the custom tab.
+   */
+  manager?: TabStateManager;
+};
 
 /**
  * Props for the {@link TabList} component.
@@ -111,4 +130,13 @@ export type TabListProps = BaseComponentProps & {
    * Conventionally treated as "append to the end".
    */
   onTabListDrop?: (data: TabListDropPayload) => void;
+
+  /**
+   * Optional custom tab component, allowing the consumer to provide their own
+   * tab instead of relying on the default implementation. Functionality
+   * relating to the {@link CustomTabProps} must be implemented by the
+   * consumer, but other functionality such as drag and drop is still
+   * implemented for the consumer by components upstream of the tab.
+   */
+  CustomTabComponent?: React.ComponentType<CustomTabProps>;
 };

@@ -3,16 +3,17 @@ import { useMemo } from 'react';
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { DragStateManager } from '../../state/DragStateManager';
-import { TabStateManager } from '../../state/TabStateManager';
+import { moveTabToEndWithinPane } from '../../dev-utils/storybook.util';
 import {
   createFrameDecorator,
   createTabItemList,
-} from '../../test-utils/test-react.util';
+} from '../../dev-utils/test-react.util';
 import {
   createTabManager,
   reorderTabListWithinPane,
-} from '../../test-utils/test.util';
+} from '../../dev-utils/test.util';
+import { DragStateManager } from '../../state/DragStateManager';
+import { TabStateManager } from '../../state/TabStateManager';
 import { type TabItem } from '../../types/Tab.type';
 import { TabList } from './TabList';
 
@@ -32,27 +33,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const FrameDecorator = createFrameDecorator(480, 80);
-
-/**
- * Same-pane "move to end" helper — used when a tab is dropped on the empty
- * space of its own tab list.
- */
-const moveToEndWithinPane = (
-  tabManager: TabStateManager,
-  tabId: number,
-): void => {
-  const order = tabManager.getState().order.slice();
-
-  const fromIdx = order.indexOf(tabId);
-  if (fromIdx < 0) {
-    return;
-  }
-
-  order.splice(fromIdx, 1);
-  order.push(tabId);
-
-  tabManager.reorder(order);
-};
 
 // Base story ----------------------------------------------------------------
 
@@ -75,7 +55,7 @@ const DefaultStory = (args: React.ComponentProps<typeof TabList>) => {
         reorderTabListWithinPane(tabManager, tab.id, targetTab.id, side);
       }}
       onTabListDrop={({ tab }) => {
-        moveToEndWithinPane(tabManager, tab.id);
+        moveTabToEndWithinPane(tabManager, tab.id);
       }}
     />
   );
@@ -108,7 +88,7 @@ const OverflowingStory = (args: React.ComponentProps<typeof TabList>) => {
         reorderTabListWithinPane(tabManager, tab.id, targetTab.id, side);
       }}
       onTabListDrop={({ tab }) => {
-        moveToEndWithinPane(tabManager, tab.id);
+        moveTabToEndWithinPane(tabManager, tab.id);
       }}
     />
   );
@@ -259,7 +239,7 @@ const CrossPaneDragAndDropStory = () => {
             }}
             onTabListDrop={({ tab, sourcePaneId, targetPaneId }) => {
               if (sourcePaneId === targetPaneId) {
-                moveToEndWithinPane(tabManagerByPane[targetPaneId], tab.id);
+                moveTabToEndWithinPane(tabManagerByPane[targetPaneId], tab.id);
                 return;
               }
               moveTab(sourcePaneId, targetPaneId, tab);

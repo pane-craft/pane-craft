@@ -3,19 +3,23 @@ import { useMemo, useState } from 'react';
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { DragStateManager } from '../../state/DragStateManager';
-import { TabStateManager } from '../../state/TabStateManager';
+import { LastDropZoneDisplay } from '../../dev-utils/storybook.util';
 import {
   createFrameDecorator,
   createTabItemList,
-} from '../../test-utils/test-react.util';
+} from '../../dev-utils/test-react.util';
 import {
   createTabManager,
   reorderTabListWithinPane,
-} from '../../test-utils/test.util';
+} from '../../dev-utils/test.util';
+import { DragStateManager } from '../../state/DragStateManager';
+import { TabStateManager } from '../../state/TabStateManager';
 import { type DropZonePosition } from '../../types/DropZone.type';
 import { type TabItem } from '../../types/Tab.type';
-import { DynamicTabPaneLeaf } from './DynamicTabPaneLeaf';
+import {
+  DynamicTabPaneLeaf,
+  type DynamicTabPaneLeafProps,
+} from './DynamicTabPaneLeaf';
 
 const meta = {
   title: 'Composite/DynamicTabPaneLeaf',
@@ -33,20 +37,20 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 type DynamicTabPaneLeafArgs = React.ComponentProps<typeof DynamicTabPaneLeaf>;
 
-const FrameDecorator = createFrameDecorator(560, 320);
+const FrameDecorator = createFrameDecorator(560, 320, { position: 'relative' });
 
 const TABS = createTabItemList(3, 'Tab');
 
 // Base story --------------------------------------------------------------
 
-const DefaultStory = (args: DynamicTabPaneLeafArgs) => {
+const DefaultStory = (props: DynamicTabPaneLeafProps) => {
   const tabManager = useMemo(() => createTabManager(TABS, 1), []);
   const [lastZone, setLastZone] = useState<DropZonePosition | null>(null);
 
   return (
     <>
       <DynamicTabPaneLeaf
-        {...args}
+        {...props}
         tabManager={tabManager}
         onTabClick={(t) => {
           console.log('click', t.id);
@@ -62,17 +66,7 @@ const DefaultStory = (args: DynamicTabPaneLeafArgs) => {
           setLastZone(pos);
         }}
       />
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 8,
-          left: 8,
-          fontSize: 11,
-          color: '#6a6a6a',
-        }}
-      >
-        last zone drop: {lastZone ?? '—'}
-      </div>
+      <LastDropZoneDisplay lastZone={lastZone} />
     </>
   );
 };

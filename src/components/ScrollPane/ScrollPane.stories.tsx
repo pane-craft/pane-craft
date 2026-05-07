@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { createLoremIpsumText } from '../../test-utils/test.util';
+import { createLoremIpsumText } from '../../dev-utils/test.util';
 import { ScrollPane } from './ScrollPane';
 
 const meta = {

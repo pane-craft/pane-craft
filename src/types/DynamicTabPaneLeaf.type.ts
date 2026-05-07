@@ -9,6 +9,7 @@ import {
 } from './DropZone.type';
 import { type PaneId } from './Pane.type';
 import { type TabItem } from './Tab.type';
+import { type CustomTabProps } from './TabList.type';
 import {
   type TabListDropPayload,
   type TabDropPayload,
@@ -116,6 +117,15 @@ export type DynamicTabPaneLeafProps = BaseComponentProps & {
    * @default '30%'
    */
   edgeSize?: string;
+
+  /**
+   * Optional custom tab component, allowing the consumer to provide their own
+   * tab instead of relying on the default implementation. Functionality
+   * relating to the {@link CustomTabProps} must be implemented by the
+   * consumer, but other functionality such as drag and drop is still
+   * implemented for the consumer by components upstream of the tab.
+   */
+  CustomTabComponent?: React.ComponentType<CustomTabProps>;
 
   /** Extra class name merged onto the internal `TabList` root element. */
   tabListClassName?: string;

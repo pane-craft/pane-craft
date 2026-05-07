@@ -1,31 +1,50 @@
 import { type TabItem } from '../types/Tab.type';
 import { createLoremIpsumText } from './test.util';
 
+export const FRAME_DYNAMIC_PANE: React.CSSProperties = {
+  width: '100vw',
+  height: '100vh',
+  background: '#1e1e1e',
+  color: '#d4d4d4',
+  fontFamily: 'ui-monospace, monospace',
+  fontSize: 13,
+};
+
 /**
  * A function for getting consistent CSS for use in Storybook stories.
  * @param width - The width of the element.
  * @param height - The height of the element.
+ * @param styleOverrides - A {@link React.CSSProperties} object that overrides
+ *   the default styles.
  * @returns A {@link React.CSSProperties} object for styling an element.
  */
 export const getBodyCss = (
   width: number,
   height: number,
+  styleOverrides?: React.CSSProperties,
 ): React.CSSProperties => ({
   width,
   height,
   background: '#1e1e1e',
   border: '1px solid #3c3c3c',
+  ...styleOverrides,
 });
 
 /**
  * A function for creating a Storybook decorator.
  * @param width - The width of the container element.
  * @param height - The height of the container element.
+ * @param styleOverrides - A {@link React.CSSProperties} object that overrides
+ *   the frame's default styles.
  * @returns A wrapper to display a Storybook story in.
  */
-export const createFrameDecorator = (width: number, height: number) => {
+export const createFrameDecorator = (
+  width: number,
+  height: number,
+  styleOverrides?: React.CSSProperties,
+) => {
   const Decorator = (Story: React.ComponentType) => (
-    <div style={getBodyCss(width, height)}>
+    <div style={getBodyCss(width, height, styleOverrides)}>
       <Story />
     </div>
   );

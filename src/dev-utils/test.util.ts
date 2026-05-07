@@ -7,6 +7,7 @@ import { type TabDropTargetSide, type TabItem } from '../types/Tab.type';
 
 /**
  * Generates a "Lorem Ipsum" string of exactly n characters.
+ *
  * @param n - The desired length of the resulting string.
  * @returns A string of length n composed of repeating Lorem Ipsum text.
  */
@@ -30,6 +31,7 @@ export const createLoremIpsumText = (n: number): string => {
 
 /**
  * A function for creating a tab manager with the specified tabs.
+ *
  * @param tabList - A list of {@link TabItem}s to use with the manager.
  * @param activeId - Optional tab id to set as active.
  * @returns A {@link TabStateManager} object.
@@ -54,6 +56,7 @@ export const createTabManager = (
 /**
  * Same-pane reorder helper — extracts `tabId` from its current position and
  * inserts it next to `targetTabId` on the indicated `side`.
+ *
  * @param manager - The tabManager that controls the order of the tabs.
  * @param tabId - The id of the dragged tab.
  * @param targetTabId - The id of the drop target tab.
