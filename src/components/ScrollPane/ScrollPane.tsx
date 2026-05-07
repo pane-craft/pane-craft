@@ -4,32 +4,11 @@ import { useId } from 'react';
 import { DEFAULT_SCROLL_PANE_OPTIONS } from '../../config/defaults';
 import '../../styles/tokens-primitive.css';
 import '../../styles/tokens-semantic.css';
-import { type BaseComponentProps } from '../../types/Base.type';
-import { type ScrollPaneOptions } from '../../types/ScrollPane.type';
+import { type ScrollPaneProps } from '../../types/ScrollPane.type';
 import styles from './ScrollPane.module.css';
 import { useScrollPane } from './useScrollPane';
 
-/**
- * Props for the {@link ScrollPane} component.
- *
- * @remarks
- * `ScrollPane` is a generic wrapper that provides a custom, auto-hiding
- * scrollbar for any scrollable content. It extends {@link ScrollPaneOptions}
- * behavior options and the common {@link BaseComponentProps}.
- */
-export type ScrollPaneProps = BaseComponentProps &
-  ScrollPaneOptions & {
-    /**
-     * The content rendered inside the scrollable viewport.
-     *
-     * @remarks
-     * For horizontal panes the content is laid out in an `inline-flex`
-     * wrapper with `min-width: max-content`, so children determine the
-     * content width. For vertical panes the wrapper uses
-     * `min-height: max-content`.
-     */
-    children?: React.ReactNode;
-  };
+export { type ScrollPaneProps } from '../../types/ScrollPane.type';
 
 /**
  * A generic scrolling container with a custom, auto-hiding scrollbar.

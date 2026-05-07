@@ -1,9 +1,8 @@
-import { type TabProps } from '../components/Tab';
 import { type DragStateManager } from '../state/DragStateManager';
 import { type TabStateManager } from '../state/TabStateManager';
 import { type BaseComponentProps } from './Base.type';
 import { type PaneId } from './Pane.type';
-import { type TabItem } from './Tab.type';
+import { type TabProps, type TabItem } from './Tab.type';
 import {
   type TabListDropPayload,
   type TabDropPayload,

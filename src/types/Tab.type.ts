@@ -1,5 +1,7 @@
 import { type ReactNode } from 'react';
 
+import { type BaseComponentProps } from './Base.type';
+
 export type TabId = number;
 
 export type TabDropTargetSide = 'left' | 'right';
@@ -132,3 +134,23 @@ export type TabItem = {
    */
   content?: ReactNode;
 };
+
+/**
+ * Props for the {@link Tab} component.
+ *
+ * @remarks
+ * Tab is stateless. All visual states (`isActive`, `isDragged`,
+ * `dropTargetSide`) are controlled externally. The parent component is
+ * responsible for managing which tab is active, drag-and-drop state, etc.
+ *
+ * Activation is exposed through mouse click, or `Enter`/`Space` while the tab
+ * is focused — both invoke `onClick`. `Space` calls `preventDefault()` to
+ * suppress page scroll. Tab does not set `isActive` itself; the parent must
+ * reflect the new state back in.
+ *
+ * Default ARIA properties:
+ * `role='tab'`
+ * `aria-selected={isActive}`
+ * `tabIndex={isActive ? 0 : -1}`
+ */
+export type TabProps = BaseComponentProps & TabItem;

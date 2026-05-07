@@ -1,4 +1,4 @@
-import { type Orientation } from './Base.type';
+import { type BaseComponentProps, type Orientation } from './Base.type';
 import { type ScrollClickMode } from './ScrollStateManager.type';
 
 /**
@@ -57,3 +57,25 @@ export type ScrollPaneOptions = {
    */
   wheelToScroll?: boolean;
 };
+
+/**
+ * Props for the {@link ScrollPane} component.
+ *
+ * @remarks
+ * `ScrollPane` is a generic wrapper that provides a custom, auto-hiding
+ * scrollbar for any scrollable content. It extends {@link ScrollPaneOptions}
+ * behavior options and the common {@link BaseComponentProps}.
+ */
+export type ScrollPaneProps = BaseComponentProps &
+  ScrollPaneOptions & {
+    /**
+     * The content rendered inside the scrollable viewport.
+     *
+     * @remarks
+     * For horizontal panes the content is laid out in an `inline-flex`
+     * wrapper with `min-width: max-content`, so children determine the
+     * content width. For vertical panes the wrapper uses
+     * `min-height: max-content`.
+     */
+    children?: React.ReactNode;
+  };

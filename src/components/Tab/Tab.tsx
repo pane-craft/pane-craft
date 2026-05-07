@@ -2,29 +2,10 @@ import type React from 'react';
 
 import '../../styles/tokens-primitive.css';
 import '../../styles/tokens-semantic.css';
-import { type BaseComponentProps } from '../../types/Base.type';
-import { type TabItem } from '../../types/Tab.type';
+import { type TabProps } from '../../types/Tab.type';
 import styles from './Tab.module.css';
 
-/**
- * Props for the {@link Tab} component.
- *
- * @remarks
- * Tab is stateless. All visual states (`isActive`, `isDragged`,
- * `dropTargetSide`) are controlled externally. The parent component is
- * responsible for managing which tab is active, drag-and-drop state, etc.
- *
- * Activation is exposed through mouse click, or `Enter`/`Space` while the tab
- * is focused — both invoke `onClick`. `Space` calls `preventDefault()` to
- * suppress page scroll. Tab does not set `isActive` itself; the parent must
- * reflect the new state back in.
- *
- * Default ARIA properties:
- * `role='tab'`
- * `aria-selected={isActive}`
- * `tabIndex={isActive ? 0 : -1}`
- */
-export type TabProps = BaseComponentProps & TabItem;
+export { type TabProps } from '../../types/Tab.type';
 
 /**
  * A simple tab component with easy default features.
