@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint & Prettier Check
+    runs-on: ubuntu-latest
+    steps:
+      # Release: https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: ./.github/actions/jobSetup
+      - run: pnpm lint
+      - run: pnpm format:check
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      # Release: https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: ./.github/actions/jobSetup
+      - run: pnpm typecheck
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      # Release: https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: ./.github/actions/jobSetup
+      - run: pnpm test
+
+  build:
+    name: Build & package checks
+    runs-on: ubuntu-latest
+    steps:
+      # Release: https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: ./.github/actions/jobSetup
+      - run: pnpm build
+      - run: pnpm exec publint
+      - run: pnpm exec attw --pack
+
+  storybook:
+    name: Storybook build
+    runs-on: ubuntu-latest
+    steps:
+      # Release: https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: ./.github/actions/jobSetup
+      - run: pnpm build-storybook

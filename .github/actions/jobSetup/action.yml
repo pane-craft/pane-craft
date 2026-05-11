@@ -1,0 +1,26 @@
+name: Job Setup
+description: >
+  Set up pnpm, Node.js, and install dependencies. `actions/checkout` must run
+  in the calling job before this action because this action's file is only on
+  disk after checkout.
+
+inputs:
+  node-version:
+    description: Node.js version to install.
+    required: false
+    default: '22'
+
+runs:
+  using: composite
+  steps:
+    # Release: https://github.com/pnpm/action-setup/releases/tag/v6.0.7
+    - uses: pnpm/action-setup@739bfe42ca9233c5e6aca07c1a25a9d34aca49b0
+
+    # Release: https://github.com/actions/setup-node/releases/tag/v6.4.0
+    - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+
+    - run: pnpm install --frozen-lockfile
+      shell: bash
