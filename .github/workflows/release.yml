@@ -1,0 +1,66 @@
+# Runs after CI completes successfully on main. Opens a "Version Packages" PR
+# when new changesets land, then publishes when that PR is merged. See:
+# https://github.com/changesets/changesets/blob/main/docs/automating-changesets.md
+#
+name: Release
+
+on:
+  # `workflow_run` is used instead of `push: main` so this workflow only fires on
+  # a successful CI run.
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+
+# Never cancel an in-flight release to prevent npm and git tags becoming out of
+# sync.
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+# Each permission is set for a specific reason:
+#   contents: write       — changesets commits version bumps and pushes git tags
+#   pull-requests: write  — changesets opens / updates the "Version Packages" PR
+#   id-token: write       — OIDC token request for npm trusted publishing
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      # Uses ref to select the exact SHA CI validated. Uses fetch-depth: 0 to
+      # walk git history for accurate changelogs for changesets.
+      # Release: https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - uses: ./.github/actions/jobSetup
+
+      # OIDC trusted publishing requires npm CLI >= 11.5.1. Node 22 LTS ships
+      # with npm 10.x, so we upgrade before any publish step runs. Even though
+      # the install was done by pnpm, `changeset publish` uses `npm publish`
+      # under the hood, i.e. npm's version is what gates OIDC.
+      # https://docs.npmjs.com/trusted-publishers
+      - name: Upgrade npm for OIDC trusted publishing
+        run: npm install --global npm@latest
+
+      # `pnpm release` is the existing package.json script — it runs
+      # `changeset publish`. The action decides between two behaviors:
+      #   - If unconsumed changesets exist on main: open the Version PR.
+      #   - If versions are already bumped (PR was just merged): publish to npm.
+      # No NPM_TOKEN is provided; with id-token: write granted and a trusted
+      # publisher configured on npmjs.com, npm authenticates via OIDC.
+      # Release: https://github.com/changesets/action/releases/tag/v1.8.0
+      - name: Create Release PR or Publish
+        uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b
+        with:
+          publish: pnpm release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
