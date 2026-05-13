@@ -1,0 +1,82 @@
+# Dependabot keeps SHA-pinned GitHub Actions and npm dependencies current.
+version: 2
+
+updates:
+  # Scans every action reference under .github/, including the local composite
+  # action at .github/actions/jobSetup/. SHA pins with a trailing `# vX.Y.Z`
+  # comment are bumped as a unit.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+    # One PR per cycle bundling all action bumps, rather than one per action.
+    groups:
+      actions:
+        patterns: ['*']
+    labels:
+      - dependencies
+      - github-actions
+
+  # npm dependencies. Groups bundle related packages, e.g. a Storybook minor
+  # bump is one PR, not a dozen. Anything that doesn't match a group falls into its
+  # own PR.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      eslint:
+        patterns:
+          - eslint
+          - 'eslint-*'
+          - '@eslint/*'
+          - typescript-eslint
+      playwright:
+        patterns:
+          - playwright
+          - '@playwright/*'
+      postcss:
+        patterns:
+          - postcss
+          - 'postcss-*'
+          - autoprefixer
+      prettier:
+        patterns:
+          - prettier
+          - '@trivago/prettier-plugin-*'
+      react:
+        patterns:
+          - react
+          - react-dom
+      storybook:
+        patterns:
+          - storybook
+          - '@storybook/*'
+          - '@chromatic-com/storybook'
+      testing-library:
+        patterns:
+          - '@testing-library/*'
+      types:
+        patterns:
+          - '@types/*'
+      vite:
+        patterns:
+          - vite
+          - 'vite-*'
+          - '@vitejs/*'
+          - vitest
+          - '@vitest/*'
+
+    # React peer range is a stability promise to consumers. Bumping it beyond
+    # minor/patch updates is a deliberate decision, not something Dependabot
+    # should auto-propose.
+    ignore:
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+    labels:
+      - dependencies
+      - npm

@@ -34,8 +34,7 @@ jobs:
     steps:
       # Uses ref to select the exact SHA CI validated. Uses fetch-depth: 0 to
       # walk git history for accurate changelogs for changesets.
-      # Release: https://github.com/actions/checkout/releases/tag/v6.0.2
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
@@ -56,9 +55,8 @@ jobs:
       #   - If versions are already bumped (PR was just merged): publish to npm.
       # No NPM_TOKEN is provided; with id-token: write granted and a trusted
       # publisher configured on npmjs.com, npm authenticates via OIDC.
-      # Release: https://github.com/changesets/action/releases/tag/v1.8.0
       - name: Create Release PR or Publish
-        uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b
+        uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1.8.0
         with:
           publish: pnpm release
         env:
