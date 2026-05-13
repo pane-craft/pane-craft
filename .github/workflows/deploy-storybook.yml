@@ -1,0 +1,77 @@
+# Builds Storybook and deploys it to GitHub Pages at
+# https://justicesquad.github.io/pane-craft/
+name: Deploy Storybook
+
+on:
+  # `workflow_run` is used instead of `push: main` so this workflow only fires
+  # on a successful CI run.
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+
+# Pages allows one active deploy per environment. Queue rather than cancel so a
+# new push doesn't kill an in-flight deployment.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+# Scoped at the workflow level for the build job; deploy job opts into more.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Storybook
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      # Uses ref to select the exact SHA CI validated.
+      # Release: https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: ./.github/actions/jobSetup
+
+      # Storybook deploys to the GitHub Pages sub-path `/pane-craft`. To
+      # support this, we set the environment variable `STORYBOOK_BASE_PATH`
+      # (consumed by `viteFinal` in `./storybook/main.ts`) to the sub-path.
+      # Release: https://github.com/actions/configure-pages/releases/tag/v6.0.0
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
+
+      - name: Build Storybook
+        run: pnpm build-storybook
+        env:
+          STORYBOOK_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+      # Release: https://github.com/actions/upload-pages-artifact/releases/tag/v5.0.0
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with:
+          path: storybook-static
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Permissions for the deploy step itself:
+    #   pages: write     — publishes to GitHub Pages
+    #   id-token: write  — OIDC token that deploy-pages uses to verify the
+    #                      deployment came from this workflow
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      # Release: https://github.com/actions/deploy-pages/releases/tag/v5.0.0
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128

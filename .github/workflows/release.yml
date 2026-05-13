@@ -1,12 +1,11 @@
 # Runs after CI completes successfully on main. Opens a "Version Packages" PR
 # when new changesets land, then publishes when that PR is merged. See:
 # https://github.com/changesets/changesets/blob/main/docs/automating-changesets.md
-#
 name: Release
 
 on:
-  # `workflow_run` is used instead of `push: main` so this workflow only fires on
-  # a successful CI run.
+  # `workflow_run` is used instead of `push: main` so this workflow only fires
+  # on a successful CI run.
   workflow_run:
     workflows: [CI]
     branches: [main]
