@@ -1,5 +1,5 @@
 # Builds Storybook and deploys it to GitHub Pages at
-# https://justicesquad.github.io/pane-craft/
+# https://pane-craft.github.io/pane-craft/
 name: Deploy Storybook
 
 on:

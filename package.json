@@ -73,10 +73,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JusticeSquad/pane-craft.git"
+    "url": "git+https://github.com/pane-craft/pane-craft.git"
   },
   "bugs": {
-    "url": "https://github.com/JusticeSquad/pane-craft/issues"
+    "url": "https://github.com/pane-craft/pane-craft/issues"
   },
   "publishConfig": {
     "access": "public"
