@@ -1,4 +1,1 @@
-export {
-  StaticTabPane,
-  type StaticTabPaneProps,
-} from './StaticTabPane';
+export { StaticTabPane, type StaticTabPaneProps } from './StaticTabPane';

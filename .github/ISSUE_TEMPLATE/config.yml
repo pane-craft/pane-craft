@@ -1,0 +1,10 @@
+# Disables "Open a blank issue" to keep issues structured and triageable.
+blank_issues_enabled: false
+
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/pane-craft/pane-craft/security/advisories/new
+    about: Report security issues privately. Please do not file public issues for security.
+  - name: Questions and discussions
+    url: https://github.com/pane-craft/pane-craft/discussions
+    about: For usage questions or open-ended discussion. Requires Discussions to be enabled on the repo.

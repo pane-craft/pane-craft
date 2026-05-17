@@ -2,13 +2,16 @@ import { test, expect, type Page } from '@playwright/test';
 
 const getStoryUrl = (id: string) =>
   `/iframe.html?id=core-scrollpane--${id}&viewMode=story`;
-const getScreenshotPath = (name: string) => `e2e/screenshots/ScrollPane/${name}`;
+const getScreenshotPath = (name: string) =>
+  `e2e/screenshots/ScrollPane/${name}`;
 
 const getScrollOffset = (page: Page, axis: 'horizontal' | 'vertical') =>
-  page.locator('[data-testid="scroll-pane-viewport"]').evaluate(
-    (el, ax) => (ax === 'horizontal' ? el.scrollLeft : el.scrollTop),
-    axis,
-  );
+  page
+    .locator('[data-testid="scroll-pane-viewport"]')
+    .evaluate(
+      (el, ax) => (ax === 'horizontal' ? el.scrollLeft : el.scrollTop),
+      axis,
+    );
 
 test.describe('ScrollPane Component Visuals and Interactions', () => {
   // Horizontal overflow — base states ----------------------------------------

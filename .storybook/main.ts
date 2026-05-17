@@ -13,6 +13,17 @@ const config: StorybookConfig = {
     name: '@storybook/react-vite',
     options: {},
   },
+
+  // Set the asset base path when deploying under a subpath (i.e. GitHub
+  // Pages at `/pane-craft/`). Only set `STORYBOOK_BASE_PATH` when deploying,
+  // so local development using `pnpm storybook` is unaffected.
+  viteFinal: async (viteConfig) => {
+    if (process.env.STORYBOOK_BASE_PATH) {
+      viteConfig.base = process.env.STORYBOOK_BASE_PATH;
+    }
+    return viteConfig;
+  },
+
   typescript: {
     reactDocgen: 'react-docgen-typescript',
     reactDocgenTypescriptOptions: {
