@@ -91,7 +91,7 @@ importers:
         version: 0.5.2(eslint@9.39.4)(typescript@5.9.3)
       happy-dom:
         specifier: ^20.8.9
-        version: 20.8.9
+        version: 20.9.0
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -142,7 +142,7 @@ importers:
         version: 2.2.2(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
       vitest:
         specifier: ^4.1.0
-        version: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.8.9)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.9.0)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
 
 packages:
 
@@ -2499,8 +2499,8 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
-  happy-dom@20.8.9:
-    resolution: {integrity: sha512-Tz23LR9T9jOGVZm2x1EPdXqwA37G/owYMxRwU0E4miurAtFsPMQ1d2Jc2okUaSjZqAFz2oEn3FLXC5a0a+siyA==}
+  happy-dom@20.9.0:
+    resolution: {integrity: sha512-GZZ9mKe8r646NUAf/zemnGbjYh4Bt8/MqASJY+pSm5ZDtc3YQox+4gsLI7yi1hba6o+eCsGxpHn5+iEVn31/FQ==}
     engines: {node: '>=20.0.0'}
 
   has-bigints@1.1.0:
@@ -4103,6 +4103,18 @@ packages:
       utf-8-validate:
         optional: true
 
+  ws@8.20.1:
+    resolution: {integrity: sha512-It4dO0K5v//JtTXuPkfEOaI3uUN87iYPnqo/ZzqCoG3g8uhA66QUMs/SrM0YK7/NAu+r4LMh/9dq2A7k+rHs+w==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   wsl-utils@0.1.0:
     resolution: {integrity: sha512-h3Fbisa2nKGPxCpm89Hk33lBLsnaGBvctQopaBSOW/uIs6FTe1ATyAnKFJrzVs9vpGdsTe73WF3V4lIsk4Gacw==}
     engines: {node: '>=18'}
@@ -5343,7 +5355,7 @@ snapshots:
       '@vitest/browser': 4.1.0(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))(vitest@4.1.2)
       '@vitest/browser-playwright': 4.1.0(playwright@1.60.0)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))(vitest@4.1.2)
       '@vitest/runner': 4.1.2
-      vitest: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.8.9)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
+      vitest: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.9.0)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
     transitivePeerDependencies:
       - react
       - react-dom
@@ -5680,7 +5692,7 @@ snapshots:
       '@vitest/mocker': 4.1.0(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
       playwright: 1.60.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.8.9)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
+      vitest: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.9.0)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
     transitivePeerDependencies:
       - bufferutil
       - msw
@@ -5696,8 +5708,8 @@ snapshots:
       pngjs: 7.0.0
       sirv: 3.0.2
       tinyrainbow: 3.1.0
-      vitest: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.8.9)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
-      ws: 8.20.0
+      vitest: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.9.0)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
+      ws: 8.20.1
     transitivePeerDependencies:
       - bufferutil
       - msw
@@ -5716,7 +5728,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.8.9)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
+      vitest: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.9.0)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
     optionalDependencies:
       '@vitest/browser': 4.1.0(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))(vitest@4.1.2)
 
@@ -5794,7 +5806,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.1.0
-      vitest: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.8.9)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
+      vitest: 4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.9.0)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -6756,14 +6768,14 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  happy-dom@20.8.9:
+  happy-dom@20.9.0:
     dependencies:
       '@types/node': 25.8.0
       '@types/whatwg-mimetype': 3.0.2
       '@types/ws': 8.18.1
       entities: 7.0.1
       whatwg-mimetype: 3.0.0
-      ws: 8.20.0
+      ws: 8.20.1
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -8394,7 +8406,7 @@ snapshots:
       - '@emnapi/core'
       - '@emnapi/runtime'
 
-  vitest@4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.8.9)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0)):
+  vitest@4.1.2(@types/node@25.8.0)(@vitest/browser-playwright@4.1.0)(@vitest/ui@4.1.2)(happy-dom@20.9.0)(jsdom@29.0.1)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.2
       '@vitest/mocker': 4.1.2(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))
@@ -8420,7 +8432,7 @@ snapshots:
       '@types/node': 25.8.0
       '@vitest/browser-playwright': 4.1.0(playwright@1.60.0)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.8.0)(esbuild@0.27.7)(yaml@2.9.0))(vitest@4.1.2)
       '@vitest/ui': 4.1.2(vitest@4.1.2)
-      happy-dom: 20.8.9
+      happy-dom: 20.9.0
       jsdom: 29.0.1
     transitivePeerDependencies:
       - msw
@@ -8522,6 +8534,8 @@ snapshots:
       strip-ansi: 7.2.0
 
   ws@8.20.0: {}
+
+  ws@8.20.1: {}
 
   wsl-utils@0.1.0:
     dependencies:
