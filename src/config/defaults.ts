@@ -1,13 +1,12 @@
 import { type PaneSplitterProps } from '../types/PaneSplitter.type';
 import { type ScrollPaneOptions } from '../types/ScrollPane.type';
-import { type ScrollClickMode } from '../types/ScrollStateManager.type';
 import { type SplitPaneProps } from '../types/SplitPane.type';
 
 export const DEFAULT_SCROLL_PANE_THUMB_SIZE = 20;
 
 export const DEFAULT_SCROLL_PANE_OPTIONS = {
   orientation: 'horizontal',
-  trackClickMode: 'jump' as ScrollClickMode,
+  trackClickMode: 'jump',
   thumbSizeMin: DEFAULT_SCROLL_PANE_THUMB_SIZE,
   autoHide: true,
   wheelToScroll: true,

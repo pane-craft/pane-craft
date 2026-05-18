@@ -22,18 +22,17 @@ const createDragEvent = ({
   const targetEl = target ?? document.createElement('div');
   const currentTargetEl = document.createElement('div');
   if (currentTargetRect) {
-    currentTargetEl.getBoundingClientRect = () =>
-      ({
-        left: currentTargetRect.left,
-        width: currentTargetRect.width,
-        top: 0,
-        height: 20,
-        right: currentTargetRect.left + currentTargetRect.width,
-        bottom: 20,
-        x: currentTargetRect.left,
-        y: 0,
-        toJSON: () => ({}),
-      }) as DOMRect;
+    currentTargetEl.getBoundingClientRect = () => ({
+      left: currentTargetRect.left,
+      width: currentTargetRect.width,
+      top: 0,
+      height: 20,
+      right: currentTargetRect.left + currentTargetRect.width,
+      bottom: 20,
+      x: currentTargetRect.left,
+      y: 0,
+      toJSON: () => ({}),
+    });
   }
 
   const data = new Map<string, string>();
