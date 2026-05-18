@@ -69,13 +69,21 @@ updates:
           - vitest
           - '@vitest/*'
 
-    # React peer range is a stability promise to consumers. Bumping it beyond
-    # minor/patch updates is a deliberate decision, not something Dependabot
-    # should auto-propose.
+    # Block majors that require coordinated migration work, not just a bump.
+    # Minor/patch updates still flow through normally for all of these.
     ignore:
+      # React peer range is a stability promise to consumers.
       - dependency-name: react
         update-types: [version-update:semver-major]
       - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+      # ESLint major version was chosen deliberately; ignore majors to keep on
+      # specifically chosen version.
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
+      - dependency-name: '@eslint/*'
+        update-types: [version-update:semver-major]
+      - dependency-name: typescript-eslint
         update-types: [version-update:semver-major]
     labels:
       - dependencies
