@@ -31,7 +31,7 @@ const stubGeometry = ({
   }
   (
     globalThis as unknown as { ResizeObserver: typeof ResizeObserver }
-  ).ResizeObserver = StubResizeObserver as unknown as typeof ResizeObserver;
+  ).ResizeObserver = StubResizeObserver;
 
   const isHorizontal = orientation === 'horizontal';
 
