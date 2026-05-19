@@ -72,11 +72,6 @@ updates:
     # Block majors that require coordinated migration work, not just a bump.
     # Minor/patch updates still flow through normally for all of these.
     ignore:
-      # React peer range is a stability promise to consumers.
-      - dependency-name: react
-        update-types: [version-update:semver-major]
-      - dependency-name: react-dom
-        update-types: [version-update:semver-major]
       # ESLint major version was chosen deliberately; ignore majors to keep on
       # specifically chosen version.
       - dependency-name: eslint
@@ -84,6 +79,27 @@ updates:
       - dependency-name: '@eslint/*'
         update-types: [version-update:semver-major]
       - dependency-name: typescript-eslint
+        update-types: [version-update:semver-major]
+
+      # React peer range is a stability promise to consumers.
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+
+      # Vite ecosystem majors arrive in the same grouped PR as patches; without
+      # ignoring, one major stops the whole group from working correctly.
+      - dependency-name: vite
+        update-types: [version-update:semver-major]
+      - dependency-name: vitest
+        update-types: [version-update:semver-major]
+      - dependency-name: '@vitejs/*'
+        update-types: [version-update:semver-major]
+      - dependency-name: '@vitest/*'
+        update-types: [version-update:semver-major]
+      - dependency-name: vite-plugin-dts
+        update-types: [version-update:semver-major]
+      - dependency-name: vite-plugin-lib-inject-css
         update-types: [version-update:semver-major]
     labels:
       - dependencies
