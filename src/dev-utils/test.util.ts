@@ -3,7 +3,11 @@
  * final builds.
  */
 import { TabStateManager } from '../state/TabStateManager';
-import { type TabDropTargetSide, type TabItem } from '../types/Tab.type';
+import {
+  type TabId,
+  type TabDropTargetSide,
+  type TabItem,
+} from '../types/Tab.type';
 
 /**
  * Generates a "Lorem Ipsum" string of exactly n characters.
@@ -38,7 +42,7 @@ export const createLoremIpsumText = (n: number): string => {
  */
 export const createTabManager = (
   tabList: TabItem[],
-  activeId?: number,
+  activeId?: TabId,
 ): TabStateManager => {
   const m = new TabStateManager();
 

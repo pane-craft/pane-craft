@@ -185,10 +185,15 @@ export const useTabList = (
       }
 
       e.preventDefault();
+
       const nextId = order[nextIndex];
-      if (nextId === activeId) return;
-      const nextTab = internalManager.getState().itemMap.get(nextId);
-      if (nextTab === undefined) return;
+      if (nextId === activeId) {
+        return;
+      }
+
+      // TabStateManager invariants guarantee every id in `order` is in `itemMap`.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const nextTab = internalManager.getState().itemMap.get(nextId)!;
       internalManager.setActive(nextId);
       onTabClick?.(nextTab);
     },
@@ -203,16 +208,17 @@ export const useTabList = (
     [handleListKeyDown],
   );
 
-  // Derive each render rather than `useMemo` — the manager mutates `order`
-  // and `itemMap` in place, so their references are stable and a memo keyed
-  // on them would never invalidate.
-  const tabList = tabState.order
-    .map((id) => tabState.itemMap.get(id))
-    .filter((tab): tab is TabItem => tab !== undefined);
+  // TabStateManager invariants guarantee every id in `order` has a matching
+  // entry in `itemMap`, and that a non-null `activeId` is also a valid key.
+  const tabList = tabState.order.map(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    (id) => tabState.itemMap.get(id)!,
+  );
 
   const activeTab =
     tabState.activeId !== null
-      ? (tabState.itemMap.get(tabState.activeId) ?? null)
+      ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        tabState.itemMap.get(tabState.activeId)!
       : null;
 
   const state: UseTabListState = {
