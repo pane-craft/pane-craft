@@ -85,3 +85,31 @@ export const reorderTabListWithinPane = (
 
   manager.reorder(order);
 };
+
+class StubResizeObserver {
+  observe(): void {
+    /* no-op */
+  }
+  unobserve(): void {
+    /* no-op */
+  }
+  disconnect(): void {
+    /* no-op */
+  }
+}
+
+/**
+ * Installs a dummy `ResizeObserver` on `globalThis`.
+ *
+ * @remarks
+ * happy-dom does not implement `ResizeObserver`, so components that observe
+ * element size (e.g. `ScrollPane`) throw on mount without it. Call once at the
+ * top level of a test module, before rendering any components that need it.
+ * Geometry is irrelevant here — overflow behavior is covered directly in
+ * `ScrollPane`'s own tests.
+ */
+export const setStubResizeObserver = (): void => {
+  (
+    globalThis as unknown as { ResizeObserver: typeof ResizeObserver }
+  ).ResizeObserver = StubResizeObserver as unknown as typeof ResizeObserver;
+};

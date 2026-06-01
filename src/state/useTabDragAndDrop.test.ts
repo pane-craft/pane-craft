@@ -1,67 +1,14 @@
 import { act, renderHook } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+import {
+  mockDragEvent,
+  mockTabElement,
+} from '../dev-utils/test-drag-drop.util';
 import { type PaneId } from '../types/Pane.type';
 import { type TabItem } from '../types/Tab.type';
 import { DragStateManager } from './DragStateManager';
 import { useTabDragAndDrop } from './useTabDragAndDrop';
-
-/**
- * Builds a minimal stand-in for `React.DragEvent` that records the side
- * effects the hook is allowed to perform on the underlying event.
- */
-const createDragEvent = ({
-  target,
-  currentTargetRect,
-  clientX = 0,
-}: {
-  target?: HTMLElement;
-  currentTargetRect?: { left: number; width: number };
-  clientX?: number;
-} = {}): React.DragEvent => {
-  const targetEl = target ?? document.createElement('div');
-  const currentTargetEl = document.createElement('div');
-  if (currentTargetRect) {
-    currentTargetEl.getBoundingClientRect = () => ({
-      left: currentTargetRect.left,
-      width: currentTargetRect.width,
-      top: 0,
-      height: 20,
-      right: currentTargetRect.left + currentTargetRect.width,
-      bottom: 20,
-      x: currentTargetRect.left,
-      y: 0,
-      toJSON: () => ({}),
-    });
-  }
-
-  const data = new Map<string, string>();
-  const dataTransfer = {
-    effectAllowed: 'none',
-    dropEffect: 'none',
-    setData: (format: string, value: string) => {
-      data.set(format, value);
-    },
-    getData: (format: string) => data.get(format) ?? '',
-  } as unknown as DataTransfer;
-
-  return {
-    target: targetEl,
-    currentTarget: currentTargetEl,
-    clientX,
-    clientY: 0,
-    dataTransfer,
-    preventDefault: vi.fn(),
-    stopPropagation: vi.fn(),
-  } as unknown as React.DragEvent;
-};
-
-/** Builds an element that satisfies the hook's `data-tab-id` selector. */
-const tabEl = (id: number) => {
-  const el = document.createElement('div');
-  el.setAttribute('data-tab-id', String(id));
-  return el;
-};
 
 describe('useTabDragAndDrop', () => {
   const paneId: PaneId = 0;
@@ -122,7 +69,7 @@ describe('useTabDragAndDrop', () => {
       const handlers = result.current.getTabHandlers(tabA);
 
       act(() => {
-        handlers.onDragStart(createDragEvent());
+        handlers.onDragStart(mockDragEvent());
       });
 
       expect(manager.getState().draggedTab).toEqual(tabA);
@@ -133,7 +80,7 @@ describe('useTabDragAndDrop', () => {
       const { result } = renderHook(() =>
         useTabDragAndDrop({ paneId, manager }),
       );
-      const event = createDragEvent();
+      const event = mockDragEvent();
 
       act(() => {
         result.current.getTabHandlers(tabA).onDragStart(event);
@@ -148,7 +95,7 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
       expect(result.current.state.draggedTab).toEqual(tabA);
       expect(result.current.state.isDraggingFromThisPane).toBe(true);
@@ -160,7 +107,7 @@ describe('useTabDragAndDrop', () => {
       const { result } = renderHook(() =>
         useTabDragAndDrop({ paneId, manager }),
       );
-      const event = createDragEvent({
+      const event = mockDragEvent({
         currentTargetRect: { left: 0, width: 100 },
         clientX: 50,
       });
@@ -178,10 +125,10 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
 
-      const event = createDragEvent({
+      const event = mockDragEvent({
         currentTargetRect: { left: 100, width: 100 },
         clientX: 120,
       });
@@ -203,12 +150,12 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
 
       act(() => {
         result.current.getTabHandlers(tabB).onDragOver(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 100, width: 100 },
             clientX: 180,
           }),
@@ -226,12 +173,12 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
 
       act(() => {
         result.current.getTabHandlers(tabA).onDragOver(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 0, width: 100 },
             clientX: 50,
           }),
@@ -255,12 +202,12 @@ describe('useTabDragAndDrop', () => {
       act(() => {
         sourceHook.result.current
           .getTabHandlers(tabA)
-          .onDragStart(createDragEvent());
+          .onDragStart(mockDragEvent());
       });
 
       act(() => {
         targetHook.result.current.getTabHandlers(tabA).onDragOver(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 0, width: 100 },
             clientX: 25,
           }),
@@ -280,11 +227,11 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
 
       act(() => {
-        result.current.getTabHandlers(tabA).onDragEnd(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragEnd(mockDragEvent());
       });
 
       expect(manager.getState().draggedTab).toBeNull();
@@ -298,7 +245,7 @@ describe('useTabDragAndDrop', () => {
       manager.on('DRAG_ENDED', callback);
 
       act(() => {
-        result.current.getTabHandlers(tabA).onDragEnd(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragEnd(mockDragEvent());
       });
 
       expect(callback).not.toHaveBeenCalled();
@@ -312,12 +259,12 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager, onTabDrop }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
 
       act(() => {
         result.current.getTabHandlers(tabB).onDrop(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 100, width: 100 },
             clientX: 110,
           }),
@@ -340,12 +287,12 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager, onTabDrop }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
 
       act(() => {
         result.current.getTabHandlers(tabB).onDrop(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 100, width: 100 },
             clientX: 180,
           }),
@@ -369,11 +316,11 @@ describe('useTabDragAndDrop', () => {
       act(() => {
         sourceHook.result.current
           .getTabHandlers(tabA)
-          .onDragStart(createDragEvent());
+          .onDragStart(mockDragEvent());
       });
       act(() => {
         targetHook.result.current.getTabHandlers(tabC).onDrop(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 0, width: 100 },
             clientX: 25,
           }),
@@ -395,12 +342,12 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager, onTabDrop }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
 
       act(() => {
         result.current.getTabHandlers(tabA).onDrop(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 0, width: 100 },
             clientX: 50,
           }),
@@ -419,7 +366,7 @@ describe('useTabDragAndDrop', () => {
 
       act(() => {
         result.current.getTabHandlers(tabB).onDrop(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 0, width: 100 },
             clientX: 50,
           }),
@@ -434,9 +381,9 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager, onTabDrop: vi.fn() }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
-      const event = createDragEvent({
+      const event = mockDragEvent({
         currentTargetRect: { left: 0, width: 100 },
         clientX: 50,
       });
@@ -453,7 +400,7 @@ describe('useTabDragAndDrop', () => {
       const { result } = renderHook(() =>
         useTabDragAndDrop({ paneId, manager }),
       );
-      const event = createDragEvent();
+      const event = mockDragEvent();
       act(() => {
         result.current.tabListHandlers.onDragOver(event);
       });
@@ -465,9 +412,9 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
         result.current.getTabHandlers(tabB).onDragOver(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 0, width: 100 },
             clientX: 50,
           }),
@@ -477,7 +424,7 @@ describe('useTabDragAndDrop', () => {
 
       act(() => {
         result.current.tabListHandlers.onDragOver(
-          createDragEvent({ target: document.createElement('div') }),
+          mockDragEvent({ target: document.createElement('div') }),
         );
       });
       expect(manager.getState().tabDropTargetHover).toBeNull();
@@ -488,9 +435,9 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
         result.current.getTabHandlers(tabB).onDragOver(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 0, width: 100 },
             clientX: 25,
           }),
@@ -499,7 +446,7 @@ describe('useTabDragAndDrop', () => {
 
       act(() => {
         result.current.tabListHandlers.onDragOver(
-          createDragEvent({ target: tabEl(tabB.id) }),
+          mockDragEvent({ target: mockTabElement(tabB.id) }),
         );
       });
 
@@ -514,10 +461,10 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
 
-      const event = createDragEvent();
+      const event = mockDragEvent();
       act(() => {
         result.current.tabListHandlers.onDragOver(event);
       });
@@ -533,12 +480,12 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager, onTabListDrop }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
 
       act(() => {
         result.current.tabListHandlers.onDrop(
-          createDragEvent({ target: document.createElement('div') }),
+          mockDragEvent({ target: document.createElement('div') }),
         );
       });
 
@@ -562,11 +509,11 @@ describe('useTabDragAndDrop', () => {
       act(() => {
         sourceHook.result.current
           .getTabHandlers(tabA)
-          .onDragStart(createDragEvent());
+          .onDragStart(mockDragEvent());
       });
       act(() => {
         targetHook.result.current.tabListHandlers.onDrop(
-          createDragEvent({ target: document.createElement('div') }),
+          mockDragEvent({ target: document.createElement('div') }),
         );
       });
 
@@ -583,12 +530,12 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager, onTabListDrop }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
 
       act(() => {
         result.current.tabListHandlers.onDrop(
-          createDragEvent({ target: tabEl(tabB.id) }),
+          mockDragEvent({ target: mockTabElement(tabB.id) }),
         );
       });
 
@@ -603,7 +550,7 @@ describe('useTabDragAndDrop', () => {
 
       act(() => {
         result.current.tabListHandlers.onDrop(
-          createDragEvent({ target: document.createElement('div') }),
+          mockDragEvent({ target: document.createElement('div') }),
         );
       });
 
@@ -617,7 +564,7 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
       expect(result.current.state).toMatchObject({
         draggedTab: tabA,
@@ -637,7 +584,7 @@ describe('useTabDragAndDrop', () => {
       act(() => {
         sourceHook.result.current
           .getTabHandlers(tabA)
-          .onDragStart(createDragEvent());
+          .onDragStart(mockDragEvent());
       });
 
       expect(targetHook.result.current.state.draggedTab).not.toBeNull();
@@ -652,10 +599,10 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
       act(() => {
-        result.current.getTabHandlers(tabA).onDragEnd(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragEnd(mockDragEvent());
       });
       expect(result.current.state.draggedTab).toBeNull();
     });
@@ -665,11 +612,11 @@ describe('useTabDragAndDrop', () => {
         useTabDragAndDrop({ paneId, manager }),
       );
       act(() => {
-        result.current.getTabHandlers(tabA).onDragStart(createDragEvent());
+        result.current.getTabHandlers(tabA).onDragStart(mockDragEvent());
       });
       act(() => {
         result.current.getTabHandlers(tabB).onDragOver(
-          createDragEvent({
+          mockDragEvent({
             currentTargetRect: { left: 0, width: 100 },
             clientX: 25,
           }),
