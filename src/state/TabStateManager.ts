@@ -13,12 +13,21 @@ import { BaseStateManager } from './BaseStateManager';
  * This manager is headless — it owns no DOM or framework references. It
  * enforces the following invariants at all times:
  *
- * - `activeId` is always `null` only when there are no tabs.
+ * - `order` and `itemMap` represent the same set of ids — every id in `order`
+ *   is a key in `itemMap`, and vice versa.
+ * - `order` contains no duplicate ids.
+ * - When `activeId` is non-null, it is guaranteed to be a valid key in
+ *   `itemMap`. `activeId` may still be `null` even when tabs exist, e.g. when
+ *   the consumer wants to require an explicit user selection.
  * - When the active tab is removed, focus is automatically transferred to the
  *   nearest remaining tab (the tab at the same index, or the last tab if the
  *   removed one was the last).
  * - `reorder` silently rejects arrays whose length does not match the current
  *   tab count to prevent accidental data loss.
+ *
+ * The constructor validates the structural invariants up-front and throws on
+ * violation, so consumers (such as {@link useTabList}) can rely on consistent
+ * state without defensive checks downstream.
  *
  * `TabState`:
  * - `order` — ordered array of `TabId`s representing the visual sequence.
@@ -50,22 +59,63 @@ export class TabStateManager extends BaseStateManager<TabState, TabEvent> {
    * Creates a new `TabStateManager`.
    *
    * @param initialState - Optional partial state.
+   *
+   * @throws When the provided `order`, `itemMap`, and `activeId` violate the
+   *   structural invariants documented on the class. All violations are
+   *   collected and reported in a single error so the caller can address them
+   *   in one round-trip rather than fixing one, re-running, and discovering
+   *   the next.
    */
   constructor(initialState: Partial<TabState> = {}) {
-    let itemMap: Map<TabId, TabItem>;
+    const itemMap = initialState.itemMap ?? new Map<TabId, TabItem>();
+    const order = initialState.order ?? [];
+    const activeId = initialState.activeId ?? null;
 
-    if (initialState.itemMap) {
-      itemMap = initialState.itemMap;
-    } else {
-      itemMap = new Map<TabId, TabItem>();
+    const errorList: string[] = [];
+    const seenOrderIdSet = new Set<TabId>();
+    const duplicateOrderIdSet = new Set<TabId>();
+    const orderIdsMissingFromMap = new Set<TabId>();
+
+    for (const id of order) {
+      if (seenOrderIdSet.has(id)) {
+        duplicateOrderIdSet.add(id);
+      }
+      seenOrderIdSet.add(id);
+
+      if (!itemMap.has(id)) {
+        orderIdsMissingFromMap.add(id);
+      }
     }
 
-    super({
-      activeId: initialState.activeId ?? null,
-      order: initialState.order ?? [],
-      itemMap,
-      paneId: initialState.paneId,
-    });
+    for (const id of duplicateOrderIdSet) {
+      errorList.push(`order contains duplicate id ${String(id)}`);
+    }
+
+    for (const id of orderIdsMissingFromMap) {
+      errorList.push(
+        `order contains id ${String(id)} that is not present in itemMap`,
+      );
+    }
+
+    for (const id of itemMap.keys()) {
+      if (!seenOrderIdSet.has(id)) {
+        errorList.push(
+          `itemMap contains id ${String(id)} that is not present in order`,
+        );
+      }
+    }
+
+    if (activeId !== null && !itemMap.has(activeId)) {
+      errorList.push(`activeId ${String(activeId)} is not present in itemMap`);
+    }
+
+    if (errorList.length > 0) {
+      throw new Error(
+        `TabStateManager: invalid initial state:\n  - ${errorList.join('\n  - ')}`,
+      );
+    }
+
+    super({ activeId, order, itemMap, paneId: initialState.paneId });
   }
 
   /**

@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { setStubResizeObserver } from '../../dev-utils/test.util';
 import { ScrollPane, type ScrollPaneProps } from './ScrollPane';
 
 /**
@@ -18,20 +19,7 @@ const stubGeometry = ({
   contentSize: number;
   orientation: 'horizontal' | 'vertical';
 }) => {
-  class StubResizeObserver {
-    observe() {
-      /* stub method */
-    }
-    unobserve() {
-      /* stub method */
-    }
-    disconnect() {
-      /* stub method */
-    }
-  }
-  (
-    globalThis as unknown as { ResizeObserver: typeof ResizeObserver }
-  ).ResizeObserver = StubResizeObserver;
+  setStubResizeObserver();
 
   const isHorizontal = orientation === 'horizontal';
 

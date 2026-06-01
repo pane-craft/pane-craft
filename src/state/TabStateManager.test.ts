@@ -1,18 +1,21 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+import { createTabItemList } from '../dev-utils/test-react.util';
 import { type PaneId } from '../types/Pane.type';
 import { TabStateManager } from './TabStateManager';
 
 describe('TabStateManager', () => {
+  const tabList = createTabItemList(3);
   let manager: TabStateManager;
   const paneId: PaneId = 0;
+  const invalidId = 999;
 
   beforeEach(() => {
     manager = new TabStateManager({ paneId });
   });
 
   describe('Constructor', () => {
-    it('initialises with an empty state', () => {
+    it('initializes with an empty state', () => {
       const state = manager.getState();
       expect(state.order).toHaveLength(0);
       expect(state.activeId).toBeNull();
@@ -29,8 +32,99 @@ describe('TabStateManager', () => {
         order: [1, 2],
         activeId: 1,
       });
+
       expect(seeded.getState().order).toEqual([1, 2]);
       expect(seeded.getState().activeId).toBe(1);
+    });
+  });
+
+  describe('Constructor Validation', () => {
+    it('throws when order contains an id missing from itemMap', () => {
+      expect(
+        () =>
+          new TabStateManager({
+            order: [tabList[0].id, invalidId],
+            itemMap: new Map([[tabList[0].id, tabList[0]]]),
+          }),
+      ).toThrow(
+        new RegExp(
+          `order contains id ${invalidId} that is not present in itemMap`,
+        ),
+      );
+    });
+
+    it('throws when itemMap contains an id missing from order', () => {
+      expect(
+        () =>
+          new TabStateManager({
+            order: [tabList[0].id],
+            itemMap: new Map(tabList.slice(0, 2).map((t) => [t.id, t])),
+          }),
+      ).toThrow(
+        new RegExp(
+          `itemMap contains id ${String(tabList[1].id)} that is not present in order`,
+        ),
+      );
+    });
+
+    it('throws when order contains duplicate ids', () => {
+      expect(
+        () =>
+          new TabStateManager({
+            order: [tabList[0].id, tabList[0].id],
+            itemMap: new Map([[tabList[0].id, tabList[0]]]),
+          }),
+      ).toThrow(
+        new RegExp(`order contains duplicate id ${String(tabList[0].id)}`),
+      );
+    });
+
+    it('throws when activeId references a tab not present in itemMap', () => {
+      expect(
+        () =>
+          new TabStateManager({
+            order: [tabList[0].id],
+            itemMap: new Map([[tabList[0].id, tabList[0]]]),
+            activeId: invalidId,
+          }),
+      ).toThrow(new RegExp(`activeId ${invalidId} is not present in itemMap`));
+    });
+
+    it('allows activeId to be null even when tabs exist', () => {
+      expect(
+        () =>
+          new TabStateManager({
+            order: tabList.map((t) => t.id),
+            itemMap: new Map(tabList.map((t) => [t.id, t])),
+            activeId: null,
+          }),
+      ).not.toThrow();
+    });
+
+    it('reports all violations in a single error', () => {
+      let caught: unknown;
+      try {
+        new TabStateManager({
+          order: [tabList[0].id, tabList[0].id, invalidId],
+          itemMap: new Map([
+            [tabList[0].id, tabList[0]],
+            [10, { id: 10, label: 'Invalid Test' }],
+          ]),
+          activeId: 20,
+        });
+      } catch (e) {
+        caught = e;
+      }
+
+      expect(caught).toBeInstanceOf(Error);
+
+      const message = (caught as Error).message;
+      expect(message).toMatch(new RegExp(`duplicate id ${tabList[0].id}`));
+      expect(message).toMatch(
+        new RegExp(`order contains id ${invalidId} that is not present`),
+      );
+      expect(message).toMatch(/itemMap contains id 10 that is not present/);
+      expect(message).toMatch(/activeId 20 is not present/);
     });
   });
 
@@ -153,7 +247,7 @@ describe('TabStateManager', () => {
 
     it('silently exits when the id does not exist', () => {
       manager.addTab({ id: 1, label: 'Tab 1' });
-      manager.removeTab(999);
+      manager.removeTab(invalidId);
       expect(manager.getState().order).toHaveLength(1);
     });
 
@@ -206,7 +300,7 @@ describe('TabStateManager', () => {
 
     it('silently exits when the id does not exist in the collection', () => {
       manager.addTab({ id: 1, label: 'Tab 1' });
-      manager.setActive(999);
+      manager.setActive(invalidId);
       expect(manager.getState().activeId).toBe(1);
     });
 

@@ -1,4 +1,5 @@
-import { type TabItem } from '../types/Tab.type';
+import { type TabId, type TabItem } from '../types/Tab.type';
+import { type CustomTabProps } from '../types/TabList.type';
 import { createLoremIpsumText } from './test.util';
 
 export const FRAME_DYNAMIC_PANE: React.CSSProperties = {
@@ -97,3 +98,42 @@ export const createTabItemList = (
     label: `${label} ${i + 1}`,
     content: createTabContent(`${label} ${i + 1}`),
   }));
+
+/**
+ * Builds the `data-testid` rendered by the component from
+ * {@link createCustomTab}, so tests can query a specific custom tab by id.
+ *
+ * @param id - The tab id.
+ * @returns The test id string.
+ */
+export const getCustomTabTestId = (id: TabId): string => `custom-tab-${id}`;
+
+/**
+ * Creates a minimal custom tab component for demonstrating a {@link TabList}'s
+ * `CustomTabComponent` prop.
+ *
+ * @remarks
+ * The returned component renders a `role="tab"` element containing the tab
+ * label and tagged with {@link getCustomTabTestId}. Pass an `onRender`
+ * callback to capture the props the host passes down — e.g. to assert the
+ * `manager` is threaded through to the custom tab.
+ *
+ * @param onRender - Optional spy invoked with the component's props on every
+ *   render.
+ * @returns A React component for `CustomTabComponent`.
+ */
+export const createCustomTab = (
+  onRender?: (props: CustomTabProps) => void,
+): React.FC<CustomTabProps> => {
+  const CustomTab: React.FC<CustomTabProps> = (props) => {
+    onRender?.(props);
+
+    return (
+      <div data-testid={getCustomTabTestId(props.id)} role="tab">
+        {props.label}
+      </div>
+    );
+  };
+
+  return CustomTab;
+};
